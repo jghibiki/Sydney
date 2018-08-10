@@ -1,0 +1,167 @@
+{
+    "states": [
+        {
+            "name": "pending",
+            "color": "#FFC400"
+        },
+        {
+            "name": "ok",
+            "color": "#00ff00"
+        },
+        {
+            "name": "failed",
+            "color": "#ff0000"
+        },
+        {
+            "name": "skipped",
+            "color": "#919191"
+        }
+    ],
+
+    "steps": [
+        {
+            "name": "step_1",
+            "initial_state": "pending",
+            "watchers": {
+                "url": "localhost:8080/api/test",
+                "check_property": "success",
+                "transitions": [
+                    {
+                        "value": true,
+                        "new_state": "ok"
+                    },
+                    {
+                        "value": false,
+                        "new_state": "failed"
+                    }
+                ]
+            },
+            "details": {
+                "links": {
+                    "documentation": "example.com"
+                }
+
+            }
+        },
+
+        {
+            "name": "step_2",
+            "initial_state": "pending",
+            "watchers": {
+                "url": "localhost:8080/api/test",
+                "check_property": "success",
+                "transitions": [
+                    {
+                        "value": true,
+                        "new_state": "ok"
+                    },
+                    {
+                        "value": false,
+                        "new_state": "failed"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "step",
+            "name": "step_3a",
+            "initial_state": "skipped",
+            "watchers": {
+                "type": "notify",
+                "url": "localhost:8080/api/test",
+                "check_property": "success",
+                "transitions": [
+                    {
+                        "value": true,
+                        "new_state": "ok"
+                    },
+                    {
+                        "value": false,
+                        "new_state": "failed"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "step",
+            "name": "step_3b",
+            "initial_state": "pending",
+            "skipped_state": "skipped",
+            "watchers": {
+                "type": "poll",
+                "url": "localhost:8080/api/test",
+                "check_property": "success",
+                "transitions": [
+                    {
+                        "value": true,
+                        "new_state": "ok"
+                    },
+                    {
+                        "value": false,
+                        "new_state": "failed"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "step",
+            "name": "step_4",
+            "initial_state": "pending",
+            "watchers": {
+                "type": "poll",
+                "url": "localhost:8080/api/test",
+                "check_property": "success",
+                "transitions": [
+                    {
+                        "value": true,
+                        "new_state": "ok"
+                    },
+                    {
+                        "value": false,
+                        "new_state": "failed"
+                    }
+                ]
+            }
+        }
+
+    ],
+
+    "start": "step_1",
+    "pipeline": [
+        {
+            "step": "step_1",
+            "transitions": [
+                { "state": "ok", "go_to": "step_2" },
+                { "state": "failed", "go_to": "_QUIT_" }
+            ]
+        },
+        {
+            "step": "step_2",
+            "transitions": [
+                { "state": "ok", "go_to": "step_3a" },
+                { "state": "failed", "go_to": "step_3b" }
+            ]
+        },
+        {
+            "step": "step_3a",
+            "transitions": [
+                { "state": "ok", "go_to": "step_4"},
+                { "state": "failed", "go_to": "_QUIT_"}
+            ]
+        },
+        {
+            "step": "step_3b",
+            "transitions": [
+                { "state": "ok", "go_to": "step_4"},
+                { "state": "failed", "go_to": "_QUIT_"}
+            ]
+        },
+        {
+            "step": "step_4",
+            "transitions": [
+                { "state": "ok", "go_to": "_FINISH_"},
+                { "state": "failed", "go_to": "_QUIT_"}
+            ]
+        }
+    ]
+}
