@@ -31,6 +31,7 @@ class Flow extends Component {
 
 
         props.socket.on('send_pipelines', ((payload)=>{
+            this.initGraph();
             this.updatePipeline(payload);
             this.renderPipeline();
         }).bind(this));
