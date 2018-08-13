@@ -8,6 +8,12 @@ import {
 	DefaultLinkModel
 } from "storm-react-diagrams";
 import "storm-react-diagrams/dist/style.min.css";
+
+import { SimpleNodeModel } from "./SimpleNodeModel.js";
+import SimpleNodeFactory from "./SimpleNodeFactory.js";
+import { SimplePortFactory } from "./SimplePortFactory.js";
+import { SimplePortModel } from "./SimplePortModel.js";
+
 import { distributeElements } from "./dagre-utils.js";
 import { socketConnect } from 'socket.io-react';
 
@@ -61,6 +67,9 @@ class Flow extends Component {
         this.engine = new DiagramEngine();
         this.engine.installDefaultFactories();
 
+        this.engine.registerPortFactory(new SimplePortFactory("simple_node", config => new SimplePortModel()));
+        this.engine.registerNodeFactory(new SimpleNodeFactory());
+
         //2) setup the diagram model
         this.model = new DiagramModel();
 
@@ -70,8 +79,8 @@ class Flow extends Component {
         this.model.setLocked(true);
         this.graph_props = {
             allowLooseLinks: false,
-            allowCanvasTranslation: false,
-            allowCanvasZoom: false,
+            allowCanvasTranslation: true,
+            allowCanvasZoom: true,
             maxNumberPointsPerLink: 0,
         };
     }
@@ -117,10 +126,10 @@ class Flow extends Component {
                 }
             }
 
-            let new_node = new DefaultNodeModel(step.name, current_state !== null ?current_state.color : "rgb(0,255,0)");
+            let new_node = new SimpleNodeModel(step.name, current_state !== null ?current_state.color : "rgb(0,255,0)");
             new_node.setPosition(100*i, 50*i);
-            let out_port = new_node.addOutPort("Out");
-            let in_port = new_node.addInPort("In");
+            let out_port = new_node.getPort("out");
+            let in_port = new_node.getPort("in");
 
             new_steps.push({
                 "name": step.name,

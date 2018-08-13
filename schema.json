@@ -20,6 +20,16 @@
         {
             "name": "skipped",
             "color": "#919191"
+        },
+
+        // Pipeline #2 states
+        {
+            "name": "yes",
+            "color": "#00ff00"
+        },
+        {
+            "name": "no",
+            "color": "#ff0000"
         }
     ],
 
@@ -81,64 +91,64 @@
         {
             "type": "step",
             "name": "step_3a",
-            "initial_state": "skipped",
-            "watchers": {
-                "type": "notify",
-                "url": "localhost:8080/api/test",
-                "check_property": "success",
-                "transitions": [
-                    {
-                        "value": true,
-                        "new_state": "ok"
-                    },
-                    {
-                        "value": false,
-                        "new_state": "failed"
-                    }
-                ]
-            }
+            "initial_state": "skipped"
         },
         {
             "type": "step",
             "name": "step_3b",
-            "initial_state": "pending",
-            "skipped_state": "skipped",
-            "watchers": {
-                "type": "poll",
-                "url": "localhost:8080/api/test",
-                "check_property": "success",
-                "transitions": [
-                    {
-                        "value": true,
-                        "new_state": "ok"
-                    },
-                    {
-                        "value": false,
-                        "new_state": "failed"
-                    }
-                ]
-            }
+            "initial_state": "pending"
         },
         {
             "type": "step",
             "name": "step_4",
-            "initial_state": "pending",
-            "watchers": {
-                "type": "poll",
-                "url": "localhost:8080/api/test",
-                "check_property": "success",
-                "transitions": [
-                    {
-                        "value": true,
-                        "new_state": "ok"
-                    },
-                    {
-                        "value": false,
-                        "new_state": "failed"
-                    }
-                ]
-            }
+            "initial_state": "pending"
+        },
+
+        //Pipeline #2 statews
+        {
+            "type": "step",
+            "name": "likes hamburgers",
+            "initial_state": "pending"
+        },
+        {
+            "type": "step",
+            "name": "likes hotdogs",
+            "initial_state": "pending"
+        },
+        {
+            "type": "step",
+            "name": "likes chicken patties",
+            "initial_state": "pending"
+        },
+
+        {
+            "type": "step",
+            "name": "likes condiments",
+            "initial_state": "pending"
+        },
+
+        {
+            "type": "step",
+            "name": "likes ketchup",
+            "initial_state": "pending"
+        },
+        {
+            "type": "step",
+            "name": "likes mustard",
+            "initial_state": "pending"
+        },
+        {
+            "type": "step",
+            "name": "likes mayo",
+            "initial_state": "pending"
+        },
+
+        {
+            "type": "step",
+            "name": "eating",
+            "initial_state": "pending"
         }
+
 
         // Define additional pipeline states here
     ],
@@ -178,6 +188,61 @@
             "transitions": [
                 { "state": "ok", "go_to": "_FINISH_"},
                 { "state": "failed", "go_to": "_QUIT_"}
+            ]
+        },
+
+        // Pipeline #2
+        {
+            "step": "likes hamburgers",
+            "transitions": [
+                { "state": "yes", "go_to": "likes condiments"},
+                { "state": "no", "go_to": "__QUIT__"}
+            ]
+        },
+        {
+            "step": "likes hotdogs",
+            "transitions": [
+                { "state": "yes", "go_to": "likes condiments"},
+                { "state": "no", "go_to": "__QUIT__"}
+            ]
+        },
+        {
+            "step": "likes chicken patties",
+            "transitions": [
+                { "state": "yes", "go_to": "likes condiments"},
+                { "state": "no", "go_to": "__QUIT__"}
+            ]
+        },
+
+        {
+            "step": "likes condiments",
+            "transitions": [
+                { "state": "yes", "go_to": "likes ketchup"},
+                { "state": "yes", "go_to": "likes mustard"},
+                { "state": "yes", "go_to": "likes mayo"}
+            ]
+        },
+
+
+        {
+            "step": "likes ketchup",
+            "transitions": [
+                { "state": "yes", "go_to": "eating"},
+                { "state": "no", "go_to": "__QUIT__"}
+            ]
+        },
+        {
+            "step": "likes mustard",
+            "transitions": [
+                { "state": "yes", "go_to": "eating"},
+                { "state": "no", "go_to": "__QUIT__"}
+            ]
+        },
+        {
+            "step": "likes mayo",
+            "transitions": [
+                { "state": "yes", "go_to": "eating"},
+                { "state": "no", "go_to": "__QUIT__"}
             ]
         }
 
