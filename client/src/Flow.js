@@ -17,12 +17,15 @@ class Flow extends Component {
     constructor(props){
         super(props);
 
+        this.requestNotificationPermission();
+
         this.state = {
         }
 
         this.steps = null;
         this.states = null;
         this.pipeline = null;
+        this.notification_rules = null;
 
         this.initGraph();
 
@@ -78,6 +81,7 @@ class Flow extends Component {
         this.steps = pipelines.steps;
         this.states = pipelines.states;
         this.pipeline = pipelines.pipeline
+        this.notification_rules = pipelines.notifications
     }
 
     processStateUpdate(payload){
@@ -92,6 +96,7 @@ class Flow extends Component {
 
         this.initGraph();
         this.renderPipeline();
+        this.checkNotificationRules(data);
     }
 
     renderPipeline(){
@@ -166,6 +171,42 @@ class Flow extends Component {
         }
 
         this.forceUpdate();
+    }
+
+    checkNotificationRules(new_state){
+        for(var notification of this.notification_rules){
+            let step_re = new RegExp(notification.step);
+            let state_re = new RegExp(notification.state);
+
+            if(step_re.exec(new_state.step) === null) continue;
+            if(state_re.exec(new_state.state) === null) continue;
+            
+            this.showNotification(new_state.step + " is now in " + new_state.state + " state.");
+        }
+    }
+
+    requestNotificationPermission(){
+        if(!("Notification" in window)) return;
+
+        if(Notification.permission == "denied") return;
+        else{
+            Notification.requestPermission();
+        }
+    }
+
+
+    showNotification(message){
+        if(!("Notification" in window)) return;
+
+        if(Notification.permission == "denied") return;
+        else if(Notification.permission == "granted"){
+            new Notification(message);
+        }
+        else{
+            Notification.requestPermission(() => this.showNotification(message));
+        }
+
+
     }
 
 }
