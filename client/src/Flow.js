@@ -131,6 +131,7 @@ class Flow extends Component {
                 step.name, 
                 current_state !== null ?current_state.color : "rgb(0,255,0)", 
                 step.exit_state,
+                step.state,
                 step.info
             )
             new_node.setPosition(100*i, 50*i);

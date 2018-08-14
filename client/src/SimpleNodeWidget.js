@@ -16,6 +16,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { SimpleNodeModel } from "./SimpleNodeModel.js";
 import { PortWidget } from "storm-react-diagrams";
@@ -80,83 +81,85 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
         }
 
 		return (
-            <div style={{ 
-                background: background_color,
-                padding: "8px",
-                "borderRadius": "20px",
-                "border": "5px",
-                "borderStyle": border_style,
-                "borderColor": border_color,
-            }}>
-                <div onClick={this.handleClickOpen}>
-                    <div style={{visibility: "hidden", display:"inline-block"}}>
-                        <PortWidget name="in" node={this.props.node}  />
+            <Tooltip title={this.props.node.state}>
+                <div style={{ 
+                    background: background_color,
+                    padding: "8px",
+                    "borderRadius": "20px",
+                    "border": "5px",
+                    "borderStyle": border_style,
+                    "borderColor": border_color,
+                }}>
+                    <div onClick={this.handleClickOpen}>
+                        <div style={{visibility: "hidden", display:"inline-block"}}>
+                            <PortWidget name="in" node={this.props.node}  />
+                        </div>
+                        <div style={{display:"inline-block"}}>
+                            {this.props.node.name}
+                            {exit_status}
+                        </div>
+                        <div style={{visibility: "hidden", display:"inline-block"}}>
+                            <PortWidget name="out" node={this.props.node}  />
+                        </div> 
                     </div>
-                    <div style={{display:"inline-block"}}>
-                        {this.props.node.name}
-                        {exit_status}
-                    </div>
-                    <div style={{visibility: "hidden", display:"inline-block"}}>
-                        <PortWidget name="out" node={this.props.node}  />
-                    </div> 
+                    <Dialog
+                      open={this.state.dialogOpen}
+                      onClose={this.handleClose}
+                      aria-labelledby="form-dialog-title"
+                      fullWidth={true}
+                    >
+                        <DialogTitle id="form-dialog-title">{this.props.node.name}</DialogTitle>
+                        <DialogContent>
+                            <div>
+                                <b>Description:</b>
+                                <br/>
+                                <br/>
+                                {
+                                    this.props.node.info !== undefined && 
+                                    this.props.node.info.description !== undefined &&
+                                    this.props.node.info.description 
+                                }
+                                {
+                                    (this.props.node.info === undefined ||
+                                    this.props.node.info.description === undefined) &&
+                                    <span>No description</span>
+                                }
+                            </div>
+
+                            <br />
+                            <br />
+                            <Divider />
+                            <br />
+
+                            <div>
+                                <b>Links:</b>
+                                {
+                                    this.props.node.info !== undefined && 
+                                    this.props.node.info.links !== undefined && 
+                                        <ul>
+                                        {this.props.node.info.links.map(el => {
+                                            return <li key={el[0]}><a href={el[1]} target="_blank">{el[0]}</a></li>
+                                        }) }
+                                        </ul>
+                                }
+                                {
+                                    (this.props.node.info === undefined ||
+                                    this.props.node.info.links === undefined) &&
+                                    <div>
+                                        <br/>
+                                        <span>No links</span>
+                                    </div>
+                                }
+                            </div>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.handleClickClose} color="primary">
+                                Close
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </div>
-                <Dialog
-                  open={this.state.dialogOpen}
-                  onClose={this.handleClose}
-                  aria-labelledby="form-dialog-title"
-                  fullWidth={true}
-                >
-                    <DialogTitle id="form-dialog-title">{this.props.node.name}</DialogTitle>
-                    <DialogContent>
-                        <div>
-                            <b>Description:</b>
-                            <br/>
-                            <br/>
-                            {
-                                this.props.node.info !== undefined && 
-                                this.props.node.info.description !== undefined &&
-                                this.props.node.info.description 
-                            }
-                            {
-                                (this.props.node.info === undefined ||
-                                this.props.node.info.description === undefined) &&
-                                <span>No description</span>
-                            }
-                        </div>
-
-                        <br />
-                        <br />
-                        <Divider />
-                        <br />
-
-                        <div>
-                            <b>Links:</b>
-                            {
-                                this.props.node.info !== undefined && 
-                                this.props.node.info.links !== undefined && 
-                                    <ul>
-                                    {this.props.node.info.links.map(el => {
-                                        return <li key={el[0]}><a href={el[1]} target="_blank">{el[0]}</a></li>
-                                    }) }
-                                    </ul>
-                            }
-                            {
-                                (this.props.node.info === undefined ||
-                                this.props.node.info.links === undefined) &&
-                                <div>
-                                    <br/>
-                                    <span>No links</span>
-                                </div>
-                            }
-                        </div>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleClickClose} color="primary">
-                            Close
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
+            </Tooltip>
 		);
 	}
 
