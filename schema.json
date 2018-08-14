@@ -10,6 +10,10 @@
             "color": "#FFC400"
         },
         {
+            "name": "running",
+            "color": "#5E89FF"
+        },
+        {
             "name": "ok",
             "color": "#00ff00"
         },

@@ -56,7 +56,7 @@ class Flow extends Component {
 
     render() {
         return (
-            <div style={{"height": "100vh", "display": "flex", "background": "#222", "text-align": "initial" }}>
+            <div style={{"height": "100vh", "display": "flex", "background": "#222", "textAlign": "initial" }}>
                 <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.graph_props} />
             </div>
         );
@@ -99,7 +99,8 @@ class Flow extends Component {
 
         for(var step of this.steps){
             if(step.name === data.step){
-                step.state = data.state
+                step.state = data.state;
+                step.exit_state = data.exit_state;
                 break;
             }
         }
@@ -126,7 +127,7 @@ class Flow extends Component {
                 }
             }
 
-            let new_node = new SimpleNodeModel(step.name, current_state !== null ?current_state.color : "rgb(0,255,0)");
+            let new_node = new SimpleNodeModel(step.name, current_state !== null ?current_state.color : "rgb(0,255,0)", step.exit_state)
             new_node.setPosition(100*i, 50*i);
             let out_port = new_node.getPort("out");
             let in_port = new_node.getPort("in");

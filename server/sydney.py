@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO
 
 import commentjson as json
@@ -7,11 +7,17 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
+EXIT_STATES = [
+    "__QUIT__",
+    "__FINISHED__"
+]
+
 with open("../schema.json", "r") as f:
     pipelines = json.load(f)
 
 for step in pipelines["steps"]:
     step["state"] = step["initial_state"]
+    step["exit_state"] = None
 
 @socketio.on('connect')
 def on_connect():
@@ -41,11 +47,15 @@ def notify_state_change(step, state):
     step = get_step(step)
     if not step: return "Invalid step"
 
+
     step["state"] = state["name"]
+
+    step["exit_state"] = request.args.get("exit_state", None)
 
     socketio.emit("notify_state_change", json.dumps({
         "step": step["name"],
-        "state": state["name"]
+        "state": state["name"],
+        "exit_state": step["exit_state"]
     }))
 
     return "Updated {0} to state {1}".format(step["name"], state["name"])
