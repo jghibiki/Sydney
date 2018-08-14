@@ -127,7 +127,12 @@ class Flow extends Component {
                 }
             }
 
-            let new_node = new SimpleNodeModel(step.name, current_state !== null ?current_state.color : "rgb(0,255,0)", step.exit_state)
+            let new_node = new SimpleNodeModel(
+                step.name, 
+                current_state !== null ?current_state.color : "rgb(0,255,0)", 
+                step.exit_state,
+                step.info
+            )
             new_node.setPosition(100*i, 50*i);
             let out_port = new_node.getPort("out");
             let in_port = new_node.getPort("in");

@@ -5,11 +5,12 @@ import { SimplePortModel } from "./SimplePortModel";
 import * as _ from "lodash";
 
 export class SimpleNodeModel extends NodeModel {
-    constructor(name: string = "Untitled", color: string = "rgb(0,192,255)", exit_state: string = "") {
+    constructor(name: string = "Untitled", color: string = "rgb(0,192,255)", exit_state: string = "", info = {}) {
 		super("simple_node");
 		this.name = name;
 		this.color = color;
         this.exit_state = exit_state;
+        this.info = info;
 		this.addPort(new SimplePortModel("in"));
 		this.addPort(new SimplePortModel("out"));
 	}
@@ -17,6 +18,7 @@ export class SimpleNodeModel extends NodeModel {
 		super.deSerialize(object, engine);
 		this.name = object.name;
         this.exit_state = object.exit_state;
+        this.info = JSON.parse(object.info);
 		this.color = object.color;
 	}
 
@@ -24,7 +26,8 @@ export class SimpleNodeModel extends NodeModel {
 		return _.merge(super.serialize(), {
 			name: this.name,
             exit_state: this.exit_state,
-			color: this.color
+            info: JSON.stringify(this.info),
+			color: this.color,
 		});
 	}
 }

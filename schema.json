@@ -52,24 +52,11 @@
         {
             "name": "step_1",
             "initial_state": "pending",
-            "watchers": {
-                "url": "localhost:8080/api/test",
-                "check_property": "success",
-                "transitions": [
-                    {
-                        "value": true,
-                        "new_state": "ok"
-                    },
-                    {
-                        "value": false,
-                        "new_state": "failed"
-                    }
+            "info": {
+                "description": "An example step",
+                "links": [
+                    [ "documentation", "https:\/\/github.com/jghibiki/Sydney" ]
                 ]
-            },
-            "details": {
-                "links": {
-                    "documentation": "example.com"
-                }
 
             }
         },
@@ -77,35 +64,33 @@
         {
             "name": "step_2",
             "initial_state": "pending",
-            "watchers": {
-                "url": "localhost:8080/api/test",
-                "check_property": "success",
-                "transitions": [
-                    {
-                        "value": true,
-                        "new_state": "ok"
-                    },
-                    {
-                        "value": false,
-                        "new_state": "failed"
-                    }
-                ]
+            "info": {
+
             }
         },
         {
             "type": "step",
             "name": "step_3a",
-            "initial_state": "skipped"
+            "initial_state": "skipped",
+            "info": {
+
+            }
         },
         {
             "type": "step",
             "name": "step_3b",
-            "initial_state": "pending"
+            "initial_state": "pending",
+            "info": {
+
+            }
         },
         {
             "type": "step",
             "name": "step_4",
-            "initial_state": "pending"
+            "initial_state": "pending",
+            "info": {
+
+            }
         },
 
         //Pipeline #2 statews
