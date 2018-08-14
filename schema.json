@@ -15,25 +15,25 @@
         },
         {
             "name": "ok",
-            "color": "#00ff00"
+            "color": "#00cc00"
         },
         {
             "name": "failed",
-            "color": "#ff0000"
+            "color": "#B05B5B"
         },
         {
             "name": "skipped",
-            "color": "#919191"
+            "color": "#8896A6"
         },
 
         // Pipeline #2 states
         {
             "name": "yes",
-            "color": "#00ff00"
+            "color": "#00cc00"
         },
         {
             "name": "no",
-            "color": "#ff0000"
+            "color": "#B05B5B"
         }
     ],
 

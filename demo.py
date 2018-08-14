@@ -49,8 +49,10 @@ set_state("likes condiments", "yes")
 
 time.sleep(1)
 set_state("likes ketchup", "running")
-set_state("likes mustard", "running")
+time.sleep(0.5)
 set_state("likes mayo", "running")
+time.sleep(0.25)
+set_state("likes mustard", "running")
 
 time.sleep(2)
 set_state("likes ketchup", "skipped")

@@ -56,7 +56,7 @@ class Flow extends Component {
 
     render() {
         return (
-            <div style={{"height": "100vh", "display": "flex", "background": "#222", "textAlign": "initial" }}>
+            <div style={{"height": "100vh", "display": "flex", "background": "#4d4d4d", "textAlign": "initial" }}>
                 <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.graph_props} />
             </div>
         );

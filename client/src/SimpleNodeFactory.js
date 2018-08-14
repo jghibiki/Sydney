@@ -4,7 +4,7 @@ import {
     NodeModel
 } from "storm-react-diagrams";
 import React, { Component } from 'react';
-import { SimpleNodeWidget } from "./SimpleNodeWidget.js";
+import SimpleNodeWidget from "./SimpleNodeWidget.js";
 import { SimpleNodeModel } from "./SimpleNodeModel.js";
 
 class SimpleNodeFactory extends AbstractNodeFactory {
