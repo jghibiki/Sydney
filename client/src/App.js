@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 
 import Flow  from './Flow.js';
 import './App.css';
+import Host from './Host.js';
 
 
 
@@ -13,7 +14,7 @@ class App extends Component {
     constructor(props){
         super(props);
 
-        this.socket = io.connect("localhost:5000");
+        this.socket = io.connect(Host);
     }
 
     render() {
