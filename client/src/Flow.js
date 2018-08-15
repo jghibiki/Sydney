@@ -121,6 +121,7 @@ class Flow extends Component {
         if (hash === "") hash = this.root_hash;
         else hash = hash.substring(1,hash.length);
         if(hash === null) return;
+        this.hash = hash;
         
         for(var pipeline of this.pipelines){
             if(pipeline.name === hash){
