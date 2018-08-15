@@ -1,0 +1,102 @@
+{
+
+    "name": "pipeline_1",
+
+    "notifications": [
+        // List of notification rules
+        //  Uses javascript regex to resolve step and state names dynamically
+    ],
+
+    "steps": [
+        // Pipeline #1 states
+        {
+            "name": "step_1",
+            "initial_state": "pending",
+            "info": {
+                "description": "An example step",
+                "links": [
+                    [ "documentation", "https:\/\/github.com/jghibiki/Sydney" ]
+                ],
+                "quick_links": [
+                    ["Detail View", "localhost:30001/#pipeline_2"]
+                ]
+
+            }
+        },
+
+        {
+            "name": "step_2",
+            "initial_state": "pending",
+            "info": {
+
+            }
+        },
+        {
+            "type": "step",
+            "name": "step_3a",
+            "initial_state": "skipped",
+            "info": {
+
+            }
+        },
+        {
+            "type": "step",
+            "name": "step_3b",
+            "initial_state": "pending",
+            "info": {
+
+            }
+        },
+        {
+            "type": "step",
+            "name": "step_4",
+            "initial_state": "pending",
+            "info": {
+
+            }
+        }
+    ],
+
+
+    "edges": [
+        // Demo #1
+        {
+            "step": "step_1",
+            "transitions": [
+                { "state": "ok", "go_to": "step_2" },
+                { "state": "failed", "go_to": "_QUIT_" }
+            ]
+        },
+        {
+            "step": "step_2",
+            "transitions": [
+                { "state": "ok", "go_to": "step_3a" },
+                { "state": "failed", "go_to": "step_3b" }
+            ]
+        },
+        {
+            "step": "step_3a",
+            "transitions": [
+                { "state": "ok", "go_to": "step_4"},
+                { "state": "failed", "go_to": "_QUIT_"}
+            ]
+        },
+        {
+            "step": "step_3b",
+            "transitions": [
+                { "state": "ok", "go_to": "step_4"},
+                { "state": "failed", "go_to": "_QUIT_"}
+            ]
+        },
+        {
+            "step": "step_4",
+            "transitions": [
+                { "state": "ok", "go_to": "_FINISH_"},
+                { "state": "failed", "go_to": "_QUIT_"}
+            ]
+        }
+
+    ]
+}
+
+

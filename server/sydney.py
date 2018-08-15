@@ -3,6 +3,8 @@ from flask_socketio import SocketIO
 
 import commentjson as json
 
+from utils import load
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
@@ -12,16 +14,12 @@ EXIT_STATES = [
     "__FINISHED__"
 ]
 
-with open("../schema.json", "r") as f:
-    pipelines = json.load(f)
+pipelines = load()
 
-for step in pipelines["steps"]:
-    step["state"] = step["initial_state"]
-    step["exit_state"] = None
 
 @socketio.on('connect')
 def on_connect():
-    socketio.emit('send_pipelines', {'pipelines': json.dumps(pipelines)})
+    socketio.emit('send_pipelines', json.dumps(pipelines))
 
 ## ROUTES
 
@@ -38,8 +36,10 @@ def get_state(step):
     return step["state"]
 
 
-@app.route('/notify/<step>/<state>')
-def notify_state_change(step, state):
+@app.route('/notify/<pipeline>/<step>/<state>')
+def notify_state_change(pipeline, step, state):
+
+    pipeline = get_pipeline(pipeline)
 
     state = get_state(state)
     if not state: return "Invalid state"
@@ -53,6 +53,7 @@ def notify_state_change(step, state):
     step["exit_state"] = request.args.get("exit_state", None)
 
     socketio.emit("notify_state_change", json.dumps({
+        "pipeline": pipeline["name"],
         "step": step["name"],
         "state": state["name"],
         "exit_state": step["exit_state"]
@@ -73,6 +74,12 @@ def get_step(step_name):
     for step in pipelines["steps"]:
         if step["name"] == step_name:
             return step
+    return None
+
+def get_pipeline(pipelinew_name):
+    for pipeline in pipelines["pipelines"]:
+        if pipeline["name"] == pipeline_name:
+            return pipeline
     return None
 
 

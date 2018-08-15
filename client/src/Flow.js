@@ -28,9 +28,10 @@ class Flow extends Component {
         this.state = {
         }
 
-        this.steps = null;
         this.states = null;
         this.pipeline = null;
+        this.pipelines = null;
+        this.root_hash = null;
         this.notification_rules = null;
 
         this.initGraph();
@@ -42,6 +43,8 @@ class Flow extends Component {
             this.renderPipeline();
         }).bind(this));
         props.socket.on('notify_state_change', this.processStateUpdate.bind(this));
+
+        setInterval(this.monitorHash, 500);
     }
 
     getDistributedModel(engine, model) {
@@ -86,18 +89,19 @@ class Flow extends Component {
     }
 
     updatePipeline(payload){
-        let pipelines = JSON.parse(payload.pipelines)
+        let data= JSON.parse(payload)
 
-        this.steps = pipelines.steps;
-        this.states = pipelines.states;
-        this.pipeline = pipelines.pipeline
-        this.notification_rules = pipelines.notifications
+        this.states = data.states;
+        this.pipelines = data.pipelines
+        this.root_hash = data.root_hash
+        this.notification_rules = data.notifications
     }
 
     processStateUpdate(payload){
         let data  = JSON.parse(payload);
 
-        for(var step of this.steps){
+
+        for(var step of this.pipeline.steps){
             if(step.name === data.step){
                 step.state = data.state;
                 step.exit_state = data.exit_state;
@@ -113,10 +117,24 @@ class Flow extends Component {
     renderPipeline(){
         var model = this.engine.getDiagramModel();
 
+        var hash = window.location.hash;
+        if (hash === "") hash = this.root_hash;
+        else hash = hash.substring(1,hash.length);
+        if(hash === null) return;
+        
+        for(var pipeline of this.pipelines){
+            if(pipeline.name === hash){
+                this.pipeline = pipeline;
+                break
+            }
+        }
+
+        if(this.pipeline === null) alert("Invalid hash: \"" + hash + "\"");
+
         var new_steps = []
 
-        for(var i=0; i<this.steps.length; i++){
-            let step = this.steps[i];
+        for(var i=0; i<this.pipeline.steps.length; i++){
+            let step = this.pipeline.steps[i];
 
             var current_state = null
 
@@ -148,19 +166,19 @@ class Flow extends Component {
 
         //Add links
         var new_links = []
-        for(var segment of this.pipeline){
+        for(var edge of this.pipeline.edges){
 
             // Get current step
             var current_step = null;
             for(var step of new_steps){
-                if(step.name === segment.step){
+                if(step.name === edge.step){
                    current_step = step;
                     break;
                 }
             }
             if(current_step === null) continue;
 
-            for(var transition of segment.transitions){
+            for(var transition of edge.transitions){
 
                 // get node to transition to
                 var transition_to = null;
@@ -224,6 +242,14 @@ class Flow extends Component {
         }
 
 
+    }
+
+    monitorHash = () => {
+
+        if( "#" + this.hash !== window.location.hash){
+            this.initGraph();
+            this.renderPipeline();
+        }
     }
 
 }
