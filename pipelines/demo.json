@@ -17,10 +17,7 @@
                 "links": [
                     [ "documentation", "https:\/\/github.com/jghibiki/Sydney" ]
                 ],
-                "quick_links": [
-                    ["Detail View", "localhost:30001/#pipeline_2"]
-                ]
-
+                "child_pipeline": "#pipeline_2"
             }
         },
 

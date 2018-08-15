@@ -44,7 +44,7 @@ def notify_state_change(pipeline, step, state):
     state = get_state(state)
     if not state: return "Invalid state"
 
-    step = get_step(step)
+    step = get_step(pipeline, step)
     if not step: return "Invalid step"
 
 
@@ -70,13 +70,13 @@ def get_state(state_name):
             return state
     return None
 
-def get_step(step_name):
-    for step in pipelines["steps"]:
+def get_step(pipeline, step_name):
+    for step in pipeline["steps"]:
         if step["name"] == step_name:
             return step
     return None
 
-def get_pipeline(pipelinew_name):
+def get_pipeline(pipeline_name):
     for pipeline in pipelines["pipelines"]:
         if pipeline["name"] == pipeline_name:
             return pipeline

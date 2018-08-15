@@ -44,7 +44,7 @@ class Flow extends Component {
         }).bind(this));
         props.socket.on('notify_state_change', this.processStateUpdate.bind(this));
 
-        setInterval(this.monitorHash, 500);
+        setInterval(this.monitorHash.bind(this), 500);
     }
 
     getDistributedModel(engine, model) {
@@ -100,18 +100,40 @@ class Flow extends Component {
     processStateUpdate(payload){
         let data  = JSON.parse(payload);
 
+        if(this.hash === this.pipeline.name) {
+            // Update in foreground
+            for(var step of this.pipeline.steps){
+                if(step.name === data.step){
+                    step.state = data.state;
+                    step.exit_state = data.exit_state;
+                    break;
+                }
+            }
 
-        for(var step of this.pipeline.steps){
-            if(step.name === data.step){
-                step.state = data.state;
-                step.exit_state = data.exit_state;
-                break;
+            for(var i=0; i<this.pipelines.length; i++){
+                if(this.pipelines[i].name == this.pipeline.name){
+                    this.pipelines[i] = this.pipeline;
+                }
+            }
+
+            this.initGraph();
+            this.renderPipeline();
+            this.checkNotificationRules(data);
+        }
+        else{
+            // Update in background
+            
+            for(var i=0; i<this.pipelines.length; i++){
+                if(this.pipelines[i].name == data.pipeline){
+                    this.pipelines[i].state = data.state;
+                    this.pipelines[i].exit_state = data.exit_state;
+                    break;
+                    
+                }
             }
         }
 
-        this.initGraph();
-        this.renderPipeline();
-        this.checkNotificationRules(data);
+
     }
 
     renderPipeline(){
@@ -247,7 +269,9 @@ class Flow extends Component {
 
     monitorHash = () => {
 
-        if( "#" + this.hash !== window.location.hash){
+        if( "#" + this.hash !== window.location.hash || (
+            this.hash !== this.root_hash && window.location.hash === ""
+        )){
             this.initGraph();
             this.renderPipeline();
         }
