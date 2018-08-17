@@ -1,10 +1,6 @@
 {
 
     "states": [
-        // Human-defined states that pipeline steps can be in
-        // There are also several system-defined states: 
-        // - __FINISHED__ : to indicate a pipeline has finished successfully
-        // - __QUIT__ : to indicate a pipeline has completed in a non-successful state.
         {
             "name": "pending",
             "color": "#FFC400"
@@ -26,7 +22,6 @@
             "color": "#8896A6"
         },
 
-        // Pipeline #2 states
         {
             "name": "yes",
             "color": "#00cc00"
@@ -38,11 +33,9 @@
     ],
 
     "notifications": [
-        // List of notification rules
-        //  Uses javascript regex to resolve step and state names dynamically
         {
             "step": ".*",
-            "state": "ok"
+            "state": "failed"
         }
     ],
 

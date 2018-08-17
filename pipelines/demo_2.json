@@ -3,13 +3,9 @@
     "name": "pipeline_2",
 
     "notifications": [
-        // List of notification rules
-        //  Uses javascript regex to resolve step and state names dynamically
     ],
 
     "steps": [
-
-        //Pipeline #2 statews
         {
             "type": "step",
             "name": "likes hamburgers",
@@ -56,8 +52,6 @@
     ],
 
     "edges": [
-
-        // Demo #2
         {
             "step": "likes hamburgers",
             "transitions": [

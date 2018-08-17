@@ -3,12 +3,9 @@
     "name": "pipeline_1",
 
     "notifications": [
-        // List of notification rules
-        //  Uses javascript regex to resolve step and state names dynamically
     ],
 
     "steps": [
-        // Pipeline #1 states
         {
             "name": "step_1",
             "initial_state": "pending",
@@ -56,7 +53,6 @@
 
 
     "edges": [
-        // Demo #1
         {
             "step": "step_1",
             "transitions": [

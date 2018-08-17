@@ -59,8 +59,19 @@ class Flow extends Component {
 
     render() {
         return (
+            <div>
+            <div style={{"textAlign": "center", "background": "#333333", "color": "#fff" }}>
+                <br/>
+                <b>
+                {this.pipeline !== null &&
+                  this.pipeline.name }
+                </b>
+                <br/>
+                <br/>
+            </div>
             <div style={{"height": "100vh", "display": "flex", "background": "#4d4d4d", "textAlign": "initial" }}>
                 <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.graph_props} />
+            </div>
             </div>
         );
     }
@@ -269,9 +280,11 @@ class Flow extends Component {
 
     monitorHash = () => {
 
-        if( "#" + this.hash !== window.location.hash || (
-            this.hash !== this.root_hash && window.location.hash === ""
-        )){
+        var atRootHash = this.hash === this.root_hash;
+        var goToRootHash = window.location.hash === "";
+        var goToOtherHash = "#" + this.hash !== window.location.hash;
+
+        if( (!goToRootHash && goToOtherHash) || (!atRootHash && goToRootHash)){
             this.initGraph();
             this.renderPipeline();
         }

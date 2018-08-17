@@ -1,6 +1,5 @@
 flask
 flask-socketio
-commentjson
 requests
 gevent
 gevent-websocket

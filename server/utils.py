@@ -1,4 +1,4 @@
-import commentjson as json
+import json
 import os
 
 def load():
