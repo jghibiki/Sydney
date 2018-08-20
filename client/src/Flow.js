@@ -240,13 +240,14 @@ class Flow extends Component {
                 new_links.push(new_link)
             }
 
-            model.addAll(...new_steps.map(e=>e.node),...new_links)
-            let distributedModel = this.getDistributedModel(this.engine, model);
-            distributedModel.setLocked(true);
-            this.engine.setDiagramModel(distributedModel);
 
 
         }
+
+        model.addAll(...new_steps.map(e=>e.node),...new_links)
+        let distributedModel = this.getDistributedModel(this.engine, model);
+        distributedModel.setLocked(true);
+        this.engine.setDiagramModel(distributedModel);
 
         this.forceUpdate();
     }
