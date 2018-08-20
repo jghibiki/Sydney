@@ -111,7 +111,7 @@ class Flow extends Component {
     processStateUpdate(payload){
         let data  = JSON.parse(payload);
 
-        if(this.hash === this.pipeline.name) {
+        if(this.hash === data.pipeline) {
             // Update in foreground
             for(var step of this.pipeline.steps){
                 if(step.name === data.step){
@@ -133,14 +133,23 @@ class Flow extends Component {
         }
         else{
             // Update in background
-            
-            for(var i=0; i<this.pipelines.length; i++){
-                if(this.pipelines[i].name == data.pipeline){
-                    this.pipelines[i].state = data.state;
-                    this.pipelines[i].exit_state = data.exit_state;
+            var i = null;
+            for(var _i=0; _i<this.pipelines.length; _i++){
+                if(this.pipelines[_i].name == data.pipeline){
+                    i = _i;
                     break;
-                    
                 }
+            }
+
+            if(i === null) return;
+
+            for(var j=0; j<this.pipelines[i].steps.length; j++){
+                if (this.pipelines[i].steps[j].name === data.step){
+                   this.pipelines[i].steps[j].state = data.state;
+                   this.pipelines[i].steps[j].exit_state = data.exit_state;
+                   break;
+                }
+
             }
         }
 
