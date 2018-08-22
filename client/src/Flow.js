@@ -9,6 +9,10 @@ import {
 } from "storm-react-diagrams";
 import "storm-react-diagrams/dist/style.min.css";
 
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+
+
 import { SimpleNodeModel } from "./SimpleNodeModel.js";
 import SimpleNodeFactory from "./SimpleNodeFactory.js";
 import { SimplePortFactory } from "./SimplePortFactory.js";
@@ -26,9 +30,14 @@ class Flow extends Component {
         this.requestNotificationPermission();
 
         this.state = {
+            selected_env_name: null,
+            env_names: null,
         }
 
         this.states = null;
+        this.env_name = null;
+        this.envs = null;
+        this.env = null;
         this.pipeline = null;
         this.pipelines = null;
         this.root_hash = null;
@@ -57,6 +66,35 @@ class Flow extends Component {
         return deSerializedModel;
     }
 
+    handleChangeEnv = event => {
+        var new_env_name = event.target.value;
+        this.setState({ selected_env_name: event.target.value });
+
+        //store changes to current envs pipelines
+        for(var i=0; i<this.envs.length; i++){
+            if(this.envs[i].name === this.env.name){
+                this.envs[i].pipelines = this.pipelines;
+                break
+            }
+        }
+
+        this.env = null;
+        for(var env of this.envs){
+            if(env.name == new_env_name){
+                this.env = env;
+                break;
+            }
+        }
+
+        if(this.env === null) throw "Invalid environment name " + new_env_name + ".";
+        
+        this.pipelines = this.env.pipelines
+
+        this.initGraph();
+        this.renderPipeline();
+
+    }
+
     render() {
         return (
             <div>
@@ -66,6 +104,17 @@ class Flow extends Component {
                 {this.pipeline !== null &&
                   this.pipeline.name }
                 </b>
+                <Select  value={this.state.selected_env_name} onChange={this.handleChangeEnv} style={{"float": "right", "color": "#fff"}} displayEmpty>
+                    { this.state.env_names === null &&
+                        <MenuItem value="">None</MenuItem>
+                    }
+                    { this.state.env_names !== null &&
+                        this.state.env_names.map( el => {
+                            return <MenuItem value={el}>{el}</MenuItem>
+                        })
+                    }
+                    
+                </Select>
                 <br/>
                 <br/>
             </div>
@@ -103,7 +152,20 @@ class Flow extends Component {
         let data= JSON.parse(payload)
 
         this.states = data.states;
-        this.pipelines = data.pipelines
+        this.envs = data.environments
+
+        if(this.env_name === null){
+            this.env_name = data.environments[0].name
+            this.env = this.envs[0]
+        }
+
+        var env_names = data.environments.map(el => el.name )
+        this.setState({
+            selected_env_name: this.env_name,
+            env_names: env_names,
+        })
+
+        this.pipelines = this.env.pipelines
         this.root_hash = data.root_hash
         this.notification_rules = data.notifications
     }
@@ -111,46 +173,71 @@ class Flow extends Component {
     processStateUpdate(payload){
         let data  = JSON.parse(payload);
 
-        if(this.hash === data.pipeline) {
-            // Update in foreground
-            for(var step of this.pipeline.steps){
-                if(step.name === data.step){
-                    step.state = data.state;
-                    step.exit_state = data.exit_state;
-                    break;
+        if(this.env.name === data.environment){
+            if(this.hash === data.pipeline) {
+                // Update in foreground
+                for(var step of this.pipeline.steps){
+                    if(step.name === data.step){
+                        step.state = data.state;
+                        step.exit_state = data.exit_state;
+                        break;
+                    }
+                }
+
+                for(var i=0; i<this.pipelines.length; i++){
+                    if(this.pipelines[i].name == this.pipeline.name){
+                        this.pipelines[i] = this.pipeline;
+                    }
+                }
+
+                this.initGraph();
+                this.renderPipeline();
+                this.checkNotificationRules(data);
+            }
+            else{
+                // Update in background
+                var i = null;
+                for(var _i=0; _i<this.pipelines.length; _i++){
+                    if(this.pipelines[_i].name == data.pipeline){
+                        i = _i;
+                        break;
+                    }
+                }
+
+                if(i === null) return;
+
+                for(var j=0; j<this.pipelines[i].steps.length; j++){
+                    if (this.pipelines[i].steps[j].name === data.step){
+                       this.pipelines[i].steps[j].state = data.state;
+                       this.pipelines[i].steps[j].exit_state = data.exit_state;
+                       break;
+                    }
+
                 }
             }
-
-            for(var i=0; i<this.pipelines.length; i++){
-                if(this.pipelines[i].name == this.pipeline.name){
-                    this.pipelines[i] = this.pipeline;
-                }
-            }
-
-            this.initGraph();
-            this.renderPipeline();
-            this.checkNotificationRules(data);
         }
-        else{
-            // Update in background
-            var i = null;
-            for(var _i=0; _i<this.pipelines.length; _i++){
-                if(this.pipelines[_i].name == data.pipeline){
-                    i = _i;
-                    break;
+        else {
+            //current env is not updated env
+
+            finished: { for(var i=0; i<this.envs.length; i++){
+                if(this.envs[i].name !== data.environment) continue;
+
+                for(var j=0; j<this.envs[i].pipelines.length; j++){
+                    if(this.envs[i].pipelines[j].name !== data.pipeline) continue;
+
+                    for(var k=0; k<this.envs[i].pipelines[j].steps.length; k++){
+                        if(this.envs[i].pipelines[j].steps[k].name === data.step){
+                            this.envs[i].pipelines[j].steps[k].state = data.state;
+                            this.envs[i].pipelines[j].steps[k].exit_state = data.exit_state;
+                            break finished;
+                        }
+
+                    }
+
+
                 }
-            }
+            } }
 
-            if(i === null) return;
-
-            for(var j=0; j<this.pipelines[i].steps.length; j++){
-                if (this.pipelines[i].steps[j].name === data.step){
-                   this.pipelines[i].steps[j].state = data.state;
-                   this.pipelines[i].steps[j].exit_state = data.exit_state;
-                   break;
-                }
-
-            }
         }
 
 
@@ -239,9 +326,6 @@ class Flow extends Component {
 
                 new_links.push(new_link)
             }
-
-
-
         }
 
         model.addAll(...new_steps.map(e=>e.node),...new_links)

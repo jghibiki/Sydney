@@ -39,6 +39,11 @@
         }
     ],
 
+    "environments": [
+        "dev",
+        "prod"
+    ],
+
     "pipelines": [
         "demo.json",
         "demo_2.json"

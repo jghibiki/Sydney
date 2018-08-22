@@ -11,23 +11,30 @@ def load():
     pipeline_defs["root_hash"] = schema["root_hash"]
     pipeline_defs["notifications"] = schema["notifications"]
 
-    pipeline_defs["pipelines"] = []
+    pipeline_defs["environments"] = []
 
-    for file_name in schema["pipelines"]:
-        file_name = os.path.join("../pipelines", file_name)
+    for env in schema["environments"]:
+        env = {
+            "name": env,
+            "pipelines": []
+        }
 
-        print(f"Attempting to load file: {file_name}")
+        for file_name in schema["pipelines"]:
+            file_name = os.path.join("../pipelines", file_name)
 
-        if os.path.exists(file_name) and os.path.isfile(file_name):
-            print(f"File \"{file_name}\" exists")
-            with open(file_name, "r") as f:
-                pipeline = json.load(f)
+            print(f"Attempting to load file: {file_name}")
 
-            for step in pipeline["steps"]:
-                step["state"] = step["initial_state"]
-                step["exit_state"] = None
+            if os.path.exists(file_name) and os.path.isfile(file_name):
+                print(f"File \"{file_name}\" exists")
+                with open(file_name, "r") as f:
+                    pipeline = json.load(f)
 
-            pipeline_defs["pipelines"].append(pipeline)
+                for step in pipeline["steps"]:
+                    step["state"] = step["initial_state"]
+                    step["exit_state"] = None
+
+                env["pipelines"].append(pipeline)
+        pipeline_defs["environments"].append(env)
 
     print("Loaded data", pipeline_defs)
     return pipeline_defs

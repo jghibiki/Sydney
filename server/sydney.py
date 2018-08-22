@@ -36,10 +36,14 @@ def get_state(step):
     return step["state"]
 
 
-@app.route('/notify/<pipeline>/<step>/<state>')
-def notify_state_change(pipeline, step, state):
+@app.route('/notify/<environment>/<pipeline>/<step>/<state>')
+def notify_state_change(environment, pipeline, step, state):
 
-    pipeline = get_pipeline(pipeline)
+    env = get_environment(environment)
+    if not env: return "Invalid environment"
+
+    pipeline = get_pipeline(env, pipeline)
+    if not pipeline: return "Invalid pipeline"
 
     state = get_state(state)
     if not state: return "Invalid state"
@@ -53,6 +57,7 @@ def notify_state_change(pipeline, step, state):
     step["exit_state"] = request.args.get("exit_state", None)
 
     socketio.emit("notify_state_change", json.dumps({
+        "environment": env["name"],
         "pipeline": pipeline["name"],
         "step": step["name"],
         "state": state["name"],
@@ -76,10 +81,16 @@ def get_step(pipeline, step_name):
             return step
     return None
 
-def get_pipeline(pipeline_name):
-    for pipeline in pipelines["pipelines"]:
+def get_pipeline(env, pipeline_name):
+    for pipeline in env["pipelines"]:
         if pipeline["name"] == pipeline_name:
             return pipeline
+    return None
+
+def get_environment(env_name):
+    for environment in pipelines["environments"]:
+        if environment["name"] == env_name:
+            return environment
     return None
 
 
