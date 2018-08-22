@@ -143,7 +143,9 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
                             {
                                 this.props.node.info !== undefined && 
                                 this.props.node.info.description !== undefined &&
-                                this.props.node.info.description 
+                                this.props.node.info.description.split("\n").map(seg => {
+                                    return <div>{seg}<br/></div>
+                                })
                             }
                             {
                                 (this.props.node.info === undefined ||

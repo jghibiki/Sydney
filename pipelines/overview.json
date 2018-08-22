@@ -1,0 +1,27 @@
+{
+
+    "name": "Overview",
+
+    "notifications": [
+    ],
+
+    "steps": [
+        {
+            "name": "Email Triggers",
+            "initial_state": "pending",
+            "info": {
+                "description": "Automatically triggered email campaigns.",
+                "links": [
+                    [ "Source Code", "https://git.target.com/Morpheus/email-marketing" ]
+                ],
+                "child_pipeline": "#Email_Triggers"
+            }
+        }
+    ],
+
+
+    "edges": [
+    ]
+}
+
+

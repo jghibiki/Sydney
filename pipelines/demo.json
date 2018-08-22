@@ -10,7 +10,7 @@
             "name": "step_1",
             "initial_state": "pending",
             "info": {
-                "description": "An example step",
+                "description": "An example step\nwith\nline\nbreaks",
                 "links": [
                     [ "documentation", "https:\/\/github.com/jghibiki/Sydney" ]
                 ],
