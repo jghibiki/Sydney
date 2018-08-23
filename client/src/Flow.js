@@ -11,6 +11,7 @@ import "storm-react-diagrams/dist/style.min.css";
 
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import Button from '@material-ui/core/Button';
 
 
 import { SimpleNodeModel } from "./SimpleNodeModel.js";
@@ -98,25 +99,25 @@ class Flow extends Component {
     render() {
         return (
             <div>
-            <div style={{"textAlign": "center", "background": "#333333", "color": "#fff" }}>
-                <br/>
-                <b>
+            <div style={{"textAlign": "center", "background": "#333333", "color": "#fff", "padding": "30px", "display": "flex" }}>
+                <b style={{"margin":"auto"}}>
                 {this.pipeline !== null &&
                   this.pipeline.name }
                 </b>
-                <Select  value={this.state.selected_env_name} onChange={this.handleChangeEnv} style={{"float": "right", "color": "#fff"}} displayEmpty>
-                    { this.state.env_names === null &&
-                        <MenuItem value="">None</MenuItem>
-                    }
-                    { this.state.env_names !== null &&
-                        this.state.env_names.map( el => {
-                            return <MenuItem value={el}>{el}</MenuItem>
-                        })
-                    }
-                    
-                </Select>
-                <br/>
-                <br/>
+                <div> 
+                    <Select  value={this.state.selected_env_name} onChange={this.handleChangeEnv} style={{"color": "#fff", "margin-right": "30px"}} displayEmpty>
+                        { this.state.env_names === null &&
+                            <MenuItem value="">None</MenuItem>
+                        }
+                        { this.state.env_names !== null &&
+                            this.state.env_names.map( el => {
+                                return <MenuItem value={el}>{el}</MenuItem>
+                            })
+                        }
+                        
+                    </Select>
+                    <Button onClick={this.zoomToFit} style={{"color": "#fff"}} color="primary" variant="contained">Zoom to Fit</Button>
+                </div>
             </div>
             <div style={{"height": "100vh", "display": "flex", "background": "#4d4d4d", "textAlign": "initial" }}>
                 <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.graph_props} />
@@ -370,6 +371,10 @@ class Flow extends Component {
         }
 
 
+    }
+
+    zoomToFit = () => {
+        this.engine.zoomToFit();
     }
 
     monitorHash = () => {
