@@ -22,6 +22,7 @@ export class SimpleNodeModel extends NodeModel {
         this.info = JSON.parse(object.info);
         this.state = object.state;
 		this.color = object.color;
+        this.engine = engine;
 	}
 
 	serialize() {

@@ -33,6 +33,12 @@ class Flow extends Component {
         this.state = {
             selected_env_name: null,
             env_names: null,
+            graph_props: {
+                allowLooseLinks: false,
+                allowCanvasTranslation: true,
+                allowCanvasZoom: true,
+                maxNumberPointsPerLink: 0,
+            }
         }
 
         this.states = null;
@@ -96,6 +102,28 @@ class Flow extends Component {
 
     }
 
+    dialogOpen = () => {
+        this.setState({
+            graph_props: {
+                allowLooseLinks: false,
+                allowCanvasTranslation: false,
+                allowCanvasZoom: false,
+                maxNumberPointsPerLink: 0,
+            }
+        });
+    }
+
+    dialogClose = () => {
+        this.setState({
+            graph_props: {
+                allowLooseLinks: false,
+                allowCanvasTranslation: true,
+                allowCanvasZoom: true,
+                maxNumberPointsPerLink: 0,
+            }
+        });
+    }
+
     render() {
         return (
             <div>
@@ -120,7 +148,7 @@ class Flow extends Component {
                 </div>
             </div>
             <div style={{"height": "100vh", "display": "flex", "background": "#4d4d4d", "textAlign": "initial" }}>
-                <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.graph_props} />
+                <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.state.graph_props} />
             </div>
             </div>
         );
@@ -134,6 +162,9 @@ class Flow extends Component {
         this.engine.registerPortFactory(new SimplePortFactory("simple_node", config => new SimplePortModel()));
         this.engine.registerNodeFactory(new SimpleNodeFactory());
 
+        this.engine._dialogOpen = this.dialogOpen;
+        this.engine._dialogClose = this.dialogClose;
+
         //2) setup the diagram model
         this.model = new DiagramModel();
 
@@ -141,12 +172,6 @@ class Flow extends Component {
         this.engine.setDiagramModel(this.model);
 
         this.model.setLocked(true);
-        this.graph_props = {
-            allowLooseLinks: false,
-            allowCanvasTranslation: true,
-            allowCanvasZoom: true,
-            maxNumberPointsPerLink: 0,
-        };
     }
 
     updatePipeline(payload){

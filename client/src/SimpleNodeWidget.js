@@ -89,6 +89,7 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
             exit_status="";
         }
 
+            console.log(this.props);
 		return (
             <div style={{ 
                 background: background_color,
@@ -191,10 +192,12 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
 	}
 
     handleClickOpen = () => {
+        var model = this.props.node.engine._dialogOpen();
         this.setState({ dialogOpen: true }); 
     }
 
     handleClickClose = () => {
+        var model = this.props.node.engine._dialogClose();
         this.setState({ dialogOpen: false }); 
     }
 }
