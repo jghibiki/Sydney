@@ -147,7 +147,7 @@ class Flow extends Component {
                     <Button onClick={this.zoomToFit} style={{"color": "#fff"}} color="primary" variant="contained">Zoom to Fit</Button>
                 </div>
             </div>
-            <div style={{"height": "100vh", "display": "flex", "background": "#4d4d4d", "textAlign": "initial" }}>
+            <div style={{"height": "92vh", "display": "flex", "background": "#4d4d4d", "textAlign": "initial" }}>
                 <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.state.graph_props} />
             </div>
             </div>
