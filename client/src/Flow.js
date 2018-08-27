@@ -160,7 +160,7 @@ class Flow extends Component {
 
                 <div style={{"display": "flex"}}>
                     <div style={{ "background": "#4A4A4A", "overflowY": "scroll", "height": "85vh"}}>
-                        {this.filterHistory().reverse().map(el=>{
+                        {this.filterHistory().map(el=>{
                             return (
                                 <div>
                                     <div style={{
@@ -307,7 +307,7 @@ class Flow extends Component {
 
 
         var new_history = this.state.history.slice();
-        new_history.push(data);
+        new_history.splice(0, 0, data);
         this.setState({
             history: new_history
         });
