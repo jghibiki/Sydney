@@ -40,7 +40,8 @@ class Flow extends Component {
                 allowCanvasTranslation: true,
                 allowCanvasZoom: true,
                 maxNumberPointsPerLink: 0,
-            }
+            },
+            history: []
         }
 
         this.states = null;
@@ -61,6 +62,12 @@ class Flow extends Component {
             this.renderPipeline();
         }).bind(this));
         props.socket.on('notify_state_change', this.processStateUpdate.bind(this));
+
+        props.socket.on("send_history", ((history) =>{
+            this.setState({
+                history: JSON.parse(history)
+            });
+        }).bind(this));
 
         setInterval(this.monitorHash.bind(this), 500);
     }
@@ -129,29 +136,59 @@ class Flow extends Component {
     render() {
         return (
             <div>
-            <div style={{"textAlign": "center", "background": "#333333", "color": "#fff", "padding": "30px", "display": "flex" }}>
-                <b style={{"margin":"auto"}}>
-                {this.pipeline !== null &&
-                  this.pipeline.name }
-                </b>
-                <div> 
-                    <Select  value={this.state.selected_env_name} onChange={this.handleChangeEnv} style={{"color": "#fff", "margin-right": "30px"}} displayEmpty>
-                        { this.state.env_names === null &&
-                            <MenuItem value="">None</MenuItem>
-                        }
-                        { this.state.env_names !== null &&
-                            this.state.env_names.map( el => {
-                                return <MenuItem value={el}>{el}</MenuItem>
-                            })
-                        }
-                        
-                    </Select>
-                    <Button onClick={this.zoomToFit} style={{"color": "#fff"}} color="primary" variant="contained">Zoom to Fit</Button>
+                <div style={{"textAlign": "center", "background": "#333333", "color": "#fff", "padding": "30px", "display": "flex" }}>
+                    <b style={{"margin":"auto"}}>
+                    {this.pipeline !== null &&
+                      this.pipeline.name }
+                    </b>
+                    <div> 
+                        <Select  value={this.state.selected_env_name} onChange={this.handleChangeEnv} style={{"color": "#fff", "margin-right": "30px"}} displayEmpty>
+                            { this.state.env_names === null &&
+                                <MenuItem value="">None</MenuItem>
+                            }
+                            { this.state.env_names !== null &&
+                                this.state.env_names.map( el => {
+                                    return <MenuItem value={el}>{el}</MenuItem>
+                                })
+                            }
+                            
+                        </Select>
+                        <Button onClick={this.zoomToFit} style={{"color": "#fff"}} color="primary" variant="contained">Zoom to Fit</Button>
+                    </div>
                 </div>
-            </div>
-            <div style={{"height": "90vh", "display": "flex", "background": "#4d4d4d", "textAlign": "initial" }}>
-                <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.state.graph_props} />
-            </div>
+
+
+                <div style={{"display": "flex"}}>
+                    <div style={{ "background": "#4A4A4A", "overflowY": "scroll", "height": "85vh"}}>
+                        {this.filterHistory().reverse().map(el=>{
+                            return (
+                                <div>
+                                    <div style={{
+                                        "padding": "15px", 
+                                        "border-left": "15px solid " + this.getStateColor(el.state), 
+                                        "border-right": "15px solid " + this.getStateColor(el.state), 
+                                        "border-top": "1px solid black", 
+                                        "border-bottom": "1px solid black", 
+                                        "background": "#757575" 
+                                    }}>
+                                        {el.environment}
+                                        <br/>
+                                        {el.pipeline}
+                                        <br/>
+                                        {el.step} &rarr; {el.state}
+                                        <br/>
+                                        {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+
+                    <div style={{ "width": "90vw",  "background": "#4d4d4d", "textAlign": "initial" }}>
+                            <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.state.graph_props} />
+                    </div>
+                </div>
             </div>
         );
     }
@@ -269,6 +306,11 @@ class Flow extends Component {
         }
 
 
+        var new_history = this.state.history.slice();
+        new_history.push(data);
+        this.setState({
+            history: new_history
+        });
     }
 
     renderPipeline(){
@@ -361,7 +403,18 @@ class Flow extends Component {
         distributedModel.setLocked(true);
         this.engine.setDiagramModel(distributedModel);
 
+
         this.forceUpdate();
+
+        // fixes odd height and width issue
+        setTimeout( (()=>{
+            var el = document.getElementsByClassName("srd-diagram")[0];
+            el.style.height = "100%"
+            el.style.width = "100%"
+        }).bind(this), 100);
+
+        // setting timeout fixes race condition
+        setTimeout(this.zoomToFit, 100)
     }
 
     checkNotificationRules(new_state){
@@ -414,6 +467,27 @@ class Flow extends Component {
             this.initGraph();
             this.renderPipeline();
         }
+    }
+
+    getStateColor = (state_name) => {
+        for(var state of this.states){
+            if(state.name === state_name){
+                return state.color;
+            }
+        }
+        return "#000";
+    }
+
+    filterHistory = () => {
+
+        var history = this.state.history.filter(el =>{
+            return (
+                el.environment === this.env.name &&
+                el.pipeline === this.pipeline.name
+            );
+        });
+
+        return history;
     }
 
 }

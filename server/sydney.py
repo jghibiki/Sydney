@@ -1,12 +1,17 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO
+from flask_pymongo import PyMongo
 
-import json
+import bson.json_util  as json
+
+import datetime
 
 from utils import load
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
+app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
+mongo = PyMongo(app)
 socketio = SocketIO(app)
 
 EXIT_STATES = [
@@ -20,6 +25,11 @@ pipelines = load()
 @socketio.on('connect')
 def on_connect():
     socketio.emit('send_pipelines', json.dumps(pipelines))
+
+    history = list(mongo.db.history.find().sort("timestamp", -1).limit(200))
+
+    socketio.emit("send_history", json.dumps(history))
+
 
 ## ROUTES
 
@@ -56,13 +66,18 @@ def notify_state_change(environment, pipeline, step, state):
 
     step["exit_state"] = request.args.get("exit_state", None)
 
-    socketio.emit("notify_state_change", json.dumps({
+    state_change = {
         "environment": env["name"],
         "pipeline": pipeline["name"],
         "step": step["name"],
         "state": state["name"],
-        "exit_state": step["exit_state"]
-    }))
+        "exit_state": step["exit_state"],
+        "timestamp": str(datetime.datetime.utcnow())
+    }
+
+    socketio.emit("notify_state_change", json.dumps(state_change))
+
+    mongo.db.history.insert_one(state_change)
 
     return "Updated {0} to state {1}".format(step["name"], state["name"])
 
@@ -95,4 +110,5 @@ def get_environment(env_name):
 
 
 if __name__ == '__main__':
+
     socketio.run(app)
