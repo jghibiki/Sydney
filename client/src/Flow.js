@@ -189,7 +189,7 @@ class Flow extends Component {
 
         var env_names = data.environments.map(el => el.name )
         this.setState({
-            selected_env_name: this.env_name,
+            selected_env_name: this.state.selected_env_name || this.env_name,
             env_names: env_names,
         })
 
