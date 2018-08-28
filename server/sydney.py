@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO
 from flask_pymongo import PyMongo
@@ -8,9 +10,14 @@ import datetime
 
 from utils import load
 
+
+host = os.getenv("SYDNEY_MONGO_HOST", "localhost")
+port = os.getenv("SYDNEY_MONGO_PORT", "27017")
+db = os.getenv("SYDNEY_MONGO_DB")
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
+app.config["MONGO_URI"] = f"mongodb://{host}:{port}/{db}"
 mongo = PyMongo(app)
 socketio = SocketIO(app)
 
