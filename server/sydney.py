@@ -16,6 +16,7 @@ port = os.getenv("SYDNEY_MONGO_PORT", "27017")
 db = os.getenv("SYDNEY_MONGO_DB")
 db_user = os.getenv("SYDNEY_MONGO_USER", None)
 db_pass = os.getenv("SYDNEY_MONGO_PASSWORD", None)
+auth_db = os.getenv("SYDNEY_MONGO_AUTH_DB", None)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -23,7 +24,7 @@ app.config['SECRET_KEY'] = 'secret!'
 if db_user is None or db_pass is None:
     app.config["MONGO_URI"] = f"mongodb://{host}:{port}/{db}"
 else:
-    app.config["MONGO_URI"] = f"mongodb://{db_user}:{db_pass}@{host}:{port}/{db}"
+    app.config["MONGO_URI"] = f"mongodb://{db_user}:{db_pass}@{host}:{port}/{db}/{auth_db}?authMechanism=SCRAM-SHA-1"
 
 mongo = PyMongo(app)
 socketio = SocketIO(app)
