@@ -99,7 +99,6 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
                 "borderStyle": border_style,
                 "borderColor": border_color,
                 "maxWidth": "250px",
-                "maxHeight": "120px",
             }}>
                 <div >
                     <div>
@@ -109,7 +108,7 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
                         <div style={{visibility: "hidden", display:"inline-block", "float": "right"}}>
                             <PortWidget name="out" node={this.props.node}  />
                         </div> 
-                        <div style={{display:"inline-block", "wordWrap": "break-word", "maxWidth": "250px", "maxHeight": "35px", "overflow": "auto" }}>
+                        <div style={{display:"inline-block", "wordWrap": "break-word", "maxWidth": "240px", }}>
                             {this.props.node.name}
                             {exit_status}
                         </div>

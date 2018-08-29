@@ -64,6 +64,22 @@
             "info": {
 
             }
+        },
+        {
+            "type": "step",
+            "name": "step_with_a_really_really_really_really_really_really_really_long_name_number_3",
+            "initial_state": "pending",
+            "info": {
+
+            }
+        },
+        {
+            "type": "step",
+            "name": "step_with_a_really_really_really_really_really_really_really_long_name_number_4",
+            "initial_state": "pending",
+            "info": {
+
+            }
         }
     ],
 
@@ -107,7 +123,9 @@
         {
             "step": "step_with_a_really_really_really_really_really_really_really_long_name",
             "transitions": [
-                { "state": "ok", "go_to": "step_with_a_really_really_really_really_really_really_really_long_name_number_2"}
+                { "state": "ok", "go_to": "step_with_a_really_really_really_really_really_really_really_long_name_number_2"},
+                { "state": "ok", "go_to": "step_with_a_really_really_really_really_really_really_really_long_name_number_3"},
+                { "state": "ok", "go_to": "step_with_a_really_really_really_really_really_really_really_long_name_number_4"}
             ]
         }
 
