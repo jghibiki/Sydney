@@ -32,6 +32,8 @@ class Flow extends Component {
 
         this.requestNotificationPermission();
 
+        this.bit = false;
+
         this.state = {
             selected_env_name: null,
             env_names: null,
@@ -142,7 +144,7 @@ class Flow extends Component {
                       this.pipeline.name }
                     </b>
                     <div> 
-                        <Select  value={this.state.selected_env_name} onChange={this.handleChangeEnv} style={{"color": "#fff", "margin-right": "30px"}} displayEmpty>
+                        <Select  value={this.state.selected_env_name} onChange={this.handleChangeEnv} style={{"color": "#fff", "marginRight": "30px"}} displayEmpty>
                             { this.state.env_names === null &&
                                 <MenuItem value="">None</MenuItem>
                             }
@@ -165,10 +167,10 @@ class Flow extends Component {
                                 <div>
                                     <div style={{
                                         "padding": "15px", 
-                                        "border-left": "15px solid " + this.getStateColor(el.state), 
-                                        "border-right": "15px solid " + this.getStateColor(el.state), 
-                                        "border-top": "1px solid black", 
-                                        "border-bottom": "1px solid black", 
+                                        "borderLeft": "15px solid " + this.getStateColor(el.state), 
+                                        "borderRight": "15px solid " + this.getStateColor(el.state), 
+                                        "borderTop": "1px solid black", 
+                                        "borderBottom": "1px solid black", 
                                         "background": "#757575" 
                                     }}>
                                         {el.environment}
@@ -399,12 +401,11 @@ class Flow extends Component {
         }
 
         model.addAll(...new_steps.map(e=>e.node),...new_links)
-        let distributedModel = this.getDistributedModel(this.engine, model);
-        distributedModel.setLocked(true);
-        this.engine.setDiagramModel(distributedModel);
 
+        this.engine.setDiagramModel(model);
 
         this.forceUpdate();
+
 
         // fixes odd height and width issue
         setTimeout( (()=>{
@@ -488,6 +489,17 @@ class Flow extends Component {
         });
 
         return history;
+    }
+
+    componentDidUpdate = () => {
+        let distributedModel = this.getDistributedModel(this.engine, this.engine.getDiagramModel());
+        distributedModel.setLocked(true);
+        this.engine.setDiagramModel(distributedModel);
+
+        if (this.bit){
+            this.forceUpdate();
+        }
+        this.bit = !this.bit
     }
 
 }

@@ -2,8 +2,8 @@ import * as dagre from "dagre";
 import * as _ from "lodash";
 
 const size = {
-	width: 50,
-	height: 200
+	width: 250,
+	height: 120
 };
 
 export function distributeElements(model) {
@@ -39,7 +39,7 @@ function distributeGraph(model) {
 
 function mapElements(model) {
 	// dagre compatible format
-	return model.nodes.map(node => ({ id: node.id, metadata: { ...size, id: node.id } }));
+	return model.nodes.map(node => ({ id: node.id, metadata: { width: node.height+20, height: node.width+40, id: node.id } }));
 }
 
 function mapEdges(model) {

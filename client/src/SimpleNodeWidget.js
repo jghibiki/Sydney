@@ -1,4 +1,5 @@
 import * as React from "react";
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types';
 
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
@@ -89,7 +90,6 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
             exit_status="";
         }
 
-            console.log(this.props);
 		return (
             <div style={{ 
                 background: background_color,
@@ -98,13 +98,15 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
                 "border": "5px",
                 "borderStyle": border_style,
                 "borderColor": border_color,
+                "maxWidth": "250px",
+                "maxHeight": "120px",
             }}>
                 <div >
                     <div>
                         <div style={{visibility: "hidden", display:"inline-block"}}>
                             <PortWidget name="in" node={this.props.node}  />
                         </div>
-                        <div style={{display:"inline-block"}}>
+                        <div style={{display:"inline-block", "wordWrap": "break-word", "maxWidth": "250px", "maxHeight": "35px", "overflow": "auto" }}>
                             {this.props.node.name}
                             {exit_status}
                         </div>
@@ -199,6 +201,14 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
     handleClickClose = () => {
         var model = this.props.node.engine._dialogClose();
         this.setState({ dialogOpen: false }); 
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // One possible fix...
+        let height = ReactDOM.findDOMNode(this).offsetHeight;
+        let width = ReactDOM.findDOMNode(this).offsetWidth;
+        this.props.node.height = height;
+        this.props.node.width = width;
     }
 }
 

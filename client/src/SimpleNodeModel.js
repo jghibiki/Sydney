@@ -12,6 +12,8 @@ export class SimpleNodeModel extends NodeModel {
         this.exit_state = exit_state;
         this.info = info;
         this.state = state;
+        this.height = 10;
+        this.width = 10;
 		this.addPort(new SimplePortModel("in"));
 		this.addPort(new SimplePortModel("out"));
 	}
@@ -22,6 +24,8 @@ export class SimpleNodeModel extends NodeModel {
         this.info = JSON.parse(object.info);
         this.state = object.state;
 		this.color = object.color;
+        this.height = object.height;
+        this.width = object.width;
         this.engine = engine;
 	}
 
@@ -32,6 +36,8 @@ export class SimpleNodeModel extends NodeModel {
             info: JSON.stringify(this.info),
             state: this.state,
 			color: this.color,
+			height: this.height,
+			width: this.width,
 		});
 	}
 }

@@ -48,6 +48,14 @@
             "info": {
 
             }
+        },
+        {
+            "type": "step",
+            "name": "step_with_a_really_really_really_really_really_really_really_long_name",
+            "initial_state": "pending",
+            "info": {
+
+            }
         }
     ],
 
