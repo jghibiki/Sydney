@@ -1,18 +1,14 @@
 import * as dagre from "dagre";
 import * as _ from "lodash";
 
-const size = {
-	width: 250,
-	height: 120
-};
 
 export function distributeElements(model) {
 	let clonedModel = _.cloneDeep(model);
 	let nodes = distributeGraph(clonedModel);
 	nodes.forEach(node => {
 		let modelNode = clonedModel.nodes.find(item => item.id === node.id);
-		modelNode.x = node.y;
-		modelNode.y = node.x;
+		modelNode.x = node.x;
+		modelNode.y = node.y;
 	});
 	return clonedModel;
 }
@@ -39,7 +35,7 @@ function distributeGraph(model) {
 
 function mapElements(model) {
 	// dagre compatible format
-	return model.nodes.map(node => ({ id: node.id, metadata: { width: node.height+30, height: node.width+40, id: node.id } }));
+	return model.nodes.map(node => ({ id: node.id, metadata: { width: node.width, height: node.height+20, id: node.id } }));
 }
 
 function mapEdges(model) {
