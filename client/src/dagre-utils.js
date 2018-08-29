@@ -39,7 +39,7 @@ function distributeGraph(model) {
 
 function mapElements(model) {
 	// dagre compatible format
-	return model.nodes.map(node => ({ id: node.id, metadata: { width: node.height*0.90, height: node.width+40, id: node.id } }));
+	return model.nodes.map(node => ({ id: node.id, metadata: { width: node.height+30, height: node.width+40, id: node.id } }));
 }
 
 function mapEdges(model) {
