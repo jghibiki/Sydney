@@ -56,6 +56,14 @@
             "info": {
 
             }
+        },
+        {
+            "type": "step",
+            "name": "step_with_a_really_really_really_really_really_really_really_long_name_number_2",
+            "initial_state": "pending",
+            "info": {
+
+            }
         }
     ],
 
@@ -94,6 +102,12 @@
             "transitions": [
                 { "state": "ok", "go_to": "_FINISH_"},
                 { "state": "failed", "go_to": "_QUIT_"}
+            ]
+        },
+        {
+            "step": "step_with_a_really_really_really_really_really_really_really_long_name",
+            "transitions": [
+                { "state": "ok", "go_to": "step_with_a_really_really_really_really_really_really_really_long_name_number_2"}
             ]
         }
 

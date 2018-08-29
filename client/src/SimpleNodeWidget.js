@@ -103,16 +103,16 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
             }}>
                 <div >
                     <div>
-                        <div style={{visibility: "hidden", display:"inline-block"}}>
+                        <div style={{visibility: "hidden", display:"inline-block", "float": "left" }}>
                             <PortWidget name="in" node={this.props.node}  />
                         </div>
+                        <div style={{visibility: "hidden", display:"inline-block", "float": "right"}}>
+                            <PortWidget name="out" node={this.props.node}  />
+                        </div> 
                         <div style={{display:"inline-block", "wordWrap": "break-word", "maxWidth": "250px", "maxHeight": "35px", "overflow": "auto" }}>
                             {this.props.node.name}
                             {exit_status}
                         </div>
-                        <div style={{visibility: "hidden", display:"inline-block"}}>
-                            <PortWidget name="out" node={this.props.node}  />
-                        </div> 
                     </div>
                     <div>
                         <div style={{"textAlign": "center"}}>
