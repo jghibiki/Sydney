@@ -99,6 +99,8 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
                 "borderStyle": border_style,
                 "borderColor": border_color,
                 "maxWidth": "250px",
+                "minWidth": "250px",
+                "textAlign": "center",
             }}>
                 <div >
                     <div style={{visibility: "hidden", "marginLeft": "auto", "marginRight": "auto", "display":"table"}}>

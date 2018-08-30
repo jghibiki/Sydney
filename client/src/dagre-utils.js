@@ -35,7 +35,9 @@ function distributeGraph(model) {
 
 function mapElements(model) {
 	// dagre compatible format
-	return model.nodes.map(node => ({ id: node.id, metadata: { width: node.width, height: node.height+20, id: node.id } }));
+    let max_width = Math.max.apply(null, model.nodes.map(n=>{return n.width}))
+    let max_height = Math.max.apply(null, model.nodes.map(n=>{return n.height}))
+	return model.nodes.map(node => ({ id: node.id, metadata: { width: max_width, height: max_height, id: node.id } }));
 }
 
 function mapEdges(model) {
