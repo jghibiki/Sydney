@@ -12,6 +12,8 @@ import "storm-react-diagrams/dist/style.min.css";
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 
 import { SimpleNodeModel } from "./SimpleNodeModel.js";
@@ -43,7 +45,8 @@ class Flow extends Component {
                 allowCanvasZoom: true,
                 maxNumberPointsPerLink: 0,
             },
-            history: []
+            history: [],
+            should_filter: true,
         }
 
         this.states = null;
@@ -54,6 +57,7 @@ class Flow extends Component {
         this.pipelines = null;
         this.root_hash = null;
         this.notification_rules = null;
+        this.dont_update = false;
 
         this.initGraph();
 
@@ -137,7 +141,7 @@ class Flow extends Component {
 
     render() {
         return (
-            <div>
+            <div style={{"background": "#4d4d4d",}} >
                 <div style={{"textAlign": "center", "background": "#333333", "color": "#fff", "padding": "30px", "display": "flex" }}>
                     <b style={{"margin":"auto"}}>
                     {this.pipeline !== null &&
@@ -161,33 +165,42 @@ class Flow extends Component {
 
 
                 <div style={{"display": "flex"}}>
-                    <div style={{ "background": "#4A4A4A", "overflowY": "scroll", "height": "85vh"}}>
-                        {this.filterHistory().map(el=>{
-                            return (
-                                <div>
-                                    <div style={{
-                                        "padding": "15px", 
-                                        "borderLeft": "15px solid " + this.getStateColor(el.state), 
-                                        "borderRight": "15px solid " + this.getStateColor(el.state), 
-                                        "borderTop": "1px solid black", 
-                                        "borderBottom": "1px solid black", 
-                                        "background": "#757575" 
-                                    }}>
-                                        {el.environment}
-                                        <br/>
-                                        {el.pipeline}
-                                        <br/>
-                                        {el.step} &rarr; {el.state}
-                                        <br/>
-                                        {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                    <div style={{ "background": "#4A4A4A", "overflowY": "scroll", "height": "85vh", "min-width": "300px"}}>
+                        <div style={{ "background": "#fff"}}>
+                            <FormControlLabel control={
+                                    <Checkbox checked={this.state.should_filter} onChange={this.handleChangeFilter} value="should_filter" />
+                                }
+                                label="Filter History"
+                            />
+                        </div> 
+                        <div >
+                            {this.filterHistory().map(el=>{
+                                return (
+                                    <div key={el.timestamp + el.environment + el.pipeline + el.step + el.state}>
+                                        <div style={{
+                                            "padding": "15px", 
+                                            "borderLeft": "15px solid " + this.getStateColor(el.state), 
+                                            "borderRight": "15px solid " + this.getStateColor(el.state), 
+                                            "borderTop": "1px solid black", 
+                                            "borderBottom": "1px solid black", 
+                                            "background": "#757575" 
+                                        }}>
+                                            {el.environment}
+                                            <br/>
+                                            {el.pipeline}
+                                            <br/>
+                                            {el.step} &rarr; {el.state}
+                                            <br/>
+                                            {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
                     </div>
 
 
-                    <div style={{ "width": "90vw",  "background": "#4d4d4d", "textAlign": "initial" }}>
+                    <div style={{ "width": "90vw",  "background": "#4d4d4d", "textAlign": "initial" }} id="hidable">
                             <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} {...this.state.graph_props} />
                     </div>
                 </div>
@@ -407,15 +420,14 @@ class Flow extends Component {
         this.forceUpdate();
 
 
+
         // fixes odd height and width issue
+
         setTimeout( (()=>{
             var el = document.getElementsByClassName("srd-diagram")[0];
             el.style.height = "100%"
             el.style.width = "100%"
         }).bind(this), 100);
-
-        // setting timeout fixes race condition
-        setTimeout(this.zoomToFit, 100)
     }
 
     checkNotificationRules(new_state){
@@ -481,25 +493,58 @@ class Flow extends Component {
 
     filterHistory = () => {
 
-        var history = this.state.history.filter(el =>{
-            return (
-                el.environment === this.env.name &&
-                el.pipeline === this.pipeline.name
-            );
-        });
+        if (!this.state.should_filter) {
+            
+            var history = this.state.history.filter(el =>{
+                return (
+                    el.environment === this.env.name 
+                );
+            });
+
+        }
+        else {
+            var history = this.state.history.filter(el =>{
+                return (
+                    el.environment === this.env.name &&
+                    el.pipeline === this.pipeline.name
+                );
+            });
+        }
 
         return history;
     }
 
     componentDidUpdate = () => {
+        if (this.dont_update){
+            this.dont_update = false;
+            return
+        }
         let distributedModel = this.getDistributedModel(this.engine, this.engine.getDiagramModel());
         distributedModel.setLocked(true);
         this.engine.setDiagramModel(distributedModel);
 
         if (this.bit){
             this.forceUpdate();
+            var e = document.getElementById("hidable")
+            if (e !== undefined) e.style.visibility="hidden"
+
+            setTimeout(() => {
+                this.zoomToFit()
+                var e = document.getElementById("hidable")
+                if (e !== undefined) e.style.visibility="visible"
+            }, 200);
+
         }
+
+
         this.bit = !this.bit
+    }
+
+    handleChangeFilter = (event) => {
+        this.setState({ should_filter: event.target.checked })
+        this.dont_update = true;
+        //this.initGraph();
+        //this.renderPipeline();
     }
 
 }
