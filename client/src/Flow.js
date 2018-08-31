@@ -47,6 +47,7 @@ class Flow extends Component {
             },
             history: [],
             should_filter: true,
+            parent_link: null
         }
 
         this.states = null;
@@ -143,6 +144,9 @@ class Flow extends Component {
         return (
             <div style={{"background": "#4d4d4d",}} >
                 <div style={{"textAlign": "center", "background": "#333333", "color": "#fff", "padding": "30px", "display": "flex" }}>
+                    { this.state.parent_link && 
+                        <Button href={this.state.parent_link} style={{"color": "#fff"}} color="primary" variant="contained">Back to Parent</Button>
+                    }
                     <b style={{"margin":"auto"}}>
                     {this.pipeline !== null &&
                       this.pipeline.name }
@@ -183,7 +187,9 @@ class Flow extends Component {
                                             "borderRight": "15px solid " + this.getStateColor(el.state), 
                                             "borderTop": "1px solid black", 
                                             "borderBottom": "1px solid black", 
-                                            "background": "#757575" 
+                                            "background": "#757575",
+                                            "wordWrap": "break-word", 
+                                            "maxWidth": "300px",
                                         }}>
                                             {el.environment}
                                             <br/>
@@ -276,6 +282,7 @@ class Flow extends Component {
             }
             else{
                 // Update in background
+                this.dont_update = true;
                 var i = null;
                 for(var _i=0; _i<this.pipelines.length; _i++){
                     if(this.pipelines[_i].name == data.pipeline){
@@ -345,6 +352,7 @@ class Flow extends Component {
         }
 
         if(this.pipeline === null) alert("Invalid hash: \"" + hash + "\"");
+
 
         var new_steps = []
 
@@ -417,7 +425,12 @@ class Flow extends Component {
 
         this.engine.setDiagramModel(model);
 
-        this.forceUpdate();
+        if(this.pipeline.parent !== null){
+            this.setState({ "parent_link": this.pipeline.parent })
+        }
+        else{
+            this.forceUpdate();
+        }
 
 
 

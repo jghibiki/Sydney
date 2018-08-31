@@ -95,6 +95,37 @@ def notify_state_change(environment, pipeline, step, state):
 
     return "Updated {0} to state {1}".format(step["name"], state["name"])
 
+@app.route('/reset/<environment>/<pipeline>/<state>')
+def reset_pipeline(environment, pipeline, state):
+
+    env = get_environment(environment)
+    if not env: return "Invalid environment"
+
+    pipeline = get_pipeline(env, pipeline)
+    if not pipeline: return "Invalid pipeline"
+
+    state = get_state(state)
+    if not state: return "Invalid state"
+
+    for step in pipeline["steps"]:
+
+        step["state"] = state["name"]
+
+        state_change = {
+            "environment": env["name"],
+            "pipeline": pipeline["name"],
+            "step": step["name"],
+            "state": state["name"],
+            "exit_state": step["exit_state"],
+            "timestamp": str(datetime.datetime.utcnow())
+        }
+
+        socketio.emit("notify_state_change", json.dumps(state_change))
+
+        mongo.db.history.insert_one(state_change)
+
+    return "Updated pipeline {0} steps to state {1}".format(pipeline["name"], state["name"])
+
 
 # HELPERS
 

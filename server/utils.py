@@ -36,6 +36,17 @@ def load():
                 env["pipelines"].append(pipeline)
         pipeline_defs["environments"].append(env)
 
+
+    # make child piplines aware of their parents
+    for env in pipeline_defs["environments"]:
+        for pipeline in env["pipelines"]:
+            for step in pipeline["steps"]:
+                if "info" in step and "child_pipeline" in step["info"]:
+                    for potential_child in env["pipelines"]:
+                        if "#" + potential_child["name"] == step["info"]["child_pipeline"]:
+                            potential_child["parent"] = "#" + pipeline["name"]
+                            break
+
     print("Loaded data", pipeline_defs)
     return pipeline_defs
 
