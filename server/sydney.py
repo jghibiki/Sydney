@@ -107,9 +107,12 @@ def reset_pipeline(environment, pipeline, state):
     state = get_state(state)
     if not state: return "Invalid state"
 
+
     for step in pipeline["steps"]:
 
         step["state"] = state["name"]
+
+        step["exit_state"] = request.args.get("exit_state", None)
 
         state_change = {
             "environment": env["name"],
