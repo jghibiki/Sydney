@@ -14,7 +14,11 @@ class App extends Component {
     constructor(props){
         super(props);
 
-        this.socket = io.connect(Host);
+        this.socket = io.connect(Host, {
+            'reconnection': true,
+            'reconnectionDelay': 1000,
+            'reconnectionDelayMax' : 5000,
+        });
     }
 
     render() {
