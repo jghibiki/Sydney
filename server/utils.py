@@ -8,6 +8,7 @@ def load():
         schema = json.load(f)
 
     pipeline_defs["states"] = schema["states"]
+    pipeline_defs["failure_state"] = schema["failure_state"]
     pipeline_defs["root_hash"] = schema["root_hash"]
     pipeline_defs["notifications"] = schema["notifications"]
 
@@ -41,11 +42,12 @@ def load():
     for env in pipeline_defs["environments"]:
         for pipeline in env["pipelines"]:
             for step in pipeline["steps"]:
-                if "info" in step and "child_pipeline" in step["info"]:
-                    for potential_child in env["pipelines"]:
-                        if "#" + potential_child["name"] == step["info"]["child_pipeline"]:
-                            potential_child["parent"] = "#" + pipeline["name"]
-                            break
+                if "info" in step :
+                    if "child_pipeline" in step["info"]:
+                        for potential_child in env["pipelines"]:
+                            if "#" + potential_child["name"] == step["info"]["child_pipeline"]:
+                                potential_child["parent"] = "#" + pipeline["name"]
+                                break
 
     print("Loaded data", pipeline_defs)
     return pipeline_defs

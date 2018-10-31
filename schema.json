@@ -32,12 +32,15 @@
         }
     ],
 
+    "failure_state": "failed",
+
     "notifications": [
         {
             "step": ".*",
             "state": "failed"
         }
     ],
+
 
     "environments": [
         "dev",

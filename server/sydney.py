@@ -93,6 +93,31 @@ def notify_state_change(environment, pipeline, step, state):
 
     mongo.db.history.insert_one(state_change)
 
+    # check to see if parent is a summary node, if so update parent state
+    if "parent" in pipeline:
+        parent_pipeline, parent = get_parent(env, pipeline["parent"], pipeline["name"])
+        if(parent is not None and
+            "info" in parent and
+            "summary" in parent["info"] and
+            parent["info"]["summary"]):
+
+            # get state of all chidren of parent node
+            child_states = get_child_states(env, parent["info"]["child_pipeline"])
+
+            if child_states:
+                if pipelines["failure_state"] in child_states:
+                    # set parent to new state
+                    if pipelines["failure_state"] != parent["state"]:
+                        notify_state_change(env["name"], parent_pipeline, parent["name"], pipelines["failure_state"])
+
+
+                else:
+                    #pick most common state
+                    new_state = max(child_states, key=child_states.count)
+                    if new_state != parent["state"]:
+                        notify_state_change(env["name"], parent_pipeline, parent["name"], new_state)
+
+
     return "Updated {0} to state {1}".format(step["name"], state["name"])
 
 @app.route('/reset/<environment>/<pipeline>/<state>')
@@ -155,6 +180,43 @@ def get_environment(env_name):
         if environment["name"] == env_name:
             return environment
     return None
+
+def get_parent(env, parent_name, child_name):
+
+    raw_parent = parent_name[1:len(parent_name)]
+    child_name = "#"+child_name
+
+    parent_pipeline = None
+
+    for pipeline in env["pipelines"]:
+        if pipeline["name"] == raw_parent:
+            parent_pipeline = pipeline
+            break
+
+    parents = []
+    for step in parent_pipeline["steps"]:
+        if ("info" in step and "child_pipeline" in step["info"]):
+            if step["info"]["child_pipeline"] == child_name:
+                return parent_pipeline["name"], step
+
+    return None, None
+
+def get_child_states(env, pipeline_name):
+
+    pipeline_name = pipeline_name[1:len(pipeline_name)]
+
+    child_pipeline = None
+
+    for pipeline in env["pipelines"]:
+        if pipeline["name"] == pipeline_name:
+            child_pipeline = pipeline
+            break
+
+    if not child_pipeline: return None
+
+    states = [ step["state"] for step in pipeline["steps"] ]
+    return states
+
 
 
 if __name__ == '__main__':

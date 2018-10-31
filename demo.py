@@ -29,9 +29,7 @@ reset()
 
 
 time.sleep(5)
-set_state("dev", "pipeline_1", "step_1", "ok")
 
-set_state("prod", "pipeline_1", "step_1", "running")
 set_state("prod", "pipeline_1", "step_2", "running")
 set_state("prod", "pipeline_1", "step_3a", "running")
 set_state("prod", "pipeline_1", "step_3b", "running")
@@ -74,7 +72,7 @@ set_state("dev", "pipeline_1", "step_3b", "skipped")
 time.sleep(1)
 set_state("dev", "pipeline_2", "eating", "running")
 time.sleep(3)
-set_state("dev", "pipeline_2", "eating", "yes", "__FINISHED__")
+set_state("dev", "pipeline_2", "eating", "failed", "__QUIT__")
 
 time.sleep(2)
 set_state("dev", "pipeline_1", "step_4", "failed", "__QUIT__")
