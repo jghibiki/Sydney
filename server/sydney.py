@@ -59,6 +59,44 @@ def get_state(step):
 
     return step["state"]
 
+@app.route('/message/<environment>/<pipeline>/<step>', methods=["POST"])
+def send_message(environment, pipeline, step):
+    data = request.json
+
+    if data is None:
+        return f"Invalid data: {data}"
+
+    message = data.get("message")
+
+    if message is None or message == "":
+        return "Invalid message: message cannot be none or empty"
+
+    env = get_environment(environment)
+    if not env: return "Invalid environment"
+
+    pipeline = get_pipeline(env, pipeline)
+    if not pipeline: return "Invalid pipeline"
+
+    step = get_step(pipeline, step)
+    if not step: return "Invalid step"
+
+    message_data = {
+        "type": "message",
+        "environment": env["name"],
+        "pipeline": pipeline["name"],
+        "step": step["name"],
+        "message": message,
+        "timestamp": str(datetime.datetime.utcnow())
+    }
+
+    socketio.emit("notify_message", json.dumps(message_data))
+
+    mongo.db.history.insert_one(message_data)
+
+    return "Submitted message."
+
+
+
 
 @app.route('/notify/<environment>/<pipeline>/<step>/<state>')
 def notify_state_change(environment, pipeline, step, state):
@@ -81,6 +119,7 @@ def notify_state_change(environment, pipeline, step, state):
     step["exit_state"] = request.args.get("exit_state", None)
 
     state_change = {
+        "type": "state_update",
         "environment": env["name"],
         "pipeline": pipeline["name"],
         "step": step["name"],

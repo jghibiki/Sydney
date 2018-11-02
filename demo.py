@@ -7,6 +7,9 @@ def set_state(environment, pipeline, step, state, exit_state=None):
     else:
         requests.get(f"http://localhost:5000/notify/{environment}/{pipeline}/{step}/{state}")
 
+def send_message(environment, pipeline, step, message):
+    requests.post(f"http://localhost:5000/message{environment}/{pipeline}/{step}", data={"message":message})
+
 
 def reset():
     for env in ["dev", "prod"]:
@@ -31,6 +34,7 @@ reset()
 time.sleep(5)
 
 set_state("prod", "pipeline_1", "step_2", "running")
+send_message("prod", "pipeline_1", "step_2", "I am now running!")
 set_state("prod", "pipeline_1", "step_3a", "running")
 set_state("prod", "pipeline_1", "step_3b", "running")
 set_state("prod", "pipeline_1", "step_4", "running")

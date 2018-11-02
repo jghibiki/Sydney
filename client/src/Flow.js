@@ -70,6 +70,16 @@ class Flow extends Component {
         }).bind(this));
         props.socket.on('notify_state_change', this.processStateUpdate.bind(this));
 
+        props.socket.on('notify_message', ((message) =>{
+            var new_history = this.state.history.slice();
+            new_history.splice(0, 0, JSON.parse(message));
+            this.setState({
+                history: new_history
+            })
+            this.forceUpdate();
+        }).bind(this));
+            
+
         props.socket.on("send_history", ((history) =>{
             this.setState({
                 history: JSON.parse(history)
@@ -181,24 +191,63 @@ class Flow extends Component {
                             {this.filterHistory().map(el=>{
                                 return (
                                     <div key={el.timestamp + el.environment + el.pipeline + el.step + el.state}>
-                                        <div style={{
-                                            "padding": "15px", 
-                                            "borderLeft": "15px solid " + this.getStateColor(el.state), 
-                                            "borderRight": "15px solid " + this.getStateColor(el.state), 
-                                            "borderTop": "1px solid black", 
-                                            "borderBottom": "1px solid black", 
-                                            "background": "#757575",
-                                            "wordWrap": "break-word", 
-                                            "maxWidth": "300px",
-                                        }}>
-                                            {el.environment}
-                                            <br/>
-                                            {el.pipeline}
-                                            <br/>
-                                            {el.step} &rarr; {el.state}
-                                            <br/>
-                                            {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
-                                        </div>
+                                        { el.type == "state_update" || el.type == undefined &&
+                                            <div style={{
+                                                "padding": "15px", 
+                                                "borderLeft": "15px solid " + this.getStateColor(el.state), 
+                                                "borderRight": "15px solid " + this.getStateColor(el.state), 
+                                                "borderTop": "1px solid black", 
+                                                "borderBottom": "1px solid black", 
+                                                "background": "#757575",
+                                                "wordWrap": "break-word", 
+                                                "maxWidth": "300px",
+                                            }}>
+                                                <div style={{ "textAlign": "left"}}>
+                                                    { this.state.should_filter &&
+                                                        <b>
+                                                            {el.step} &rarr; {el.state}
+                                                        </b>
+                                                    }
+                                                    { !this.state.should_filter &&
+                                                        <b>
+                                                            {el.pipeline} : {el.step} &rarr; {el.state}
+                                                        </b>
+                                                    }
+                                                </div>
+                                                <br/>
+                                                {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                            </div>
+                                        }
+                                        { el.type == "message" &&
+                                            <div style={{
+                                                "padding": "15px", 
+                                                "borderLeft": "15px solid white", 
+                                                "borderRight": "15px solid white", 
+                                                "borderTop": "1px solid black", 
+                                                "borderBottom": "1px solid black", 
+                                                "background": "#757575",
+                                                "wordWrap": "break-word", 
+                                                "maxWidth": "300px",
+                                            }}>
+                                                <div style={{ "textAlign": "left"}}>
+                                                    { this.state.should_filter &&
+                                                        <b>
+                                                            {el.step}
+                                                        </b>
+                                                    }
+                                                    { !this.state.should_filter &&
+                                                        <b>
+                                                            {el.pipeline} : {el.step}
+                                                        </b>
+                                                    }
+                                                </div>
+                                                <br/>
+                                                <div dangerouslySetInnerHTML={{__html: el.message}}></div>
+                                                <br/>
+                                                <br/>
+                                                {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                            </div>
+                                        }
                                     </div>
                                 );
                             })}
