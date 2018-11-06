@@ -15,7 +15,7 @@ host = os.getenv("SYDNEY_MONGO_HOST", "localhost")
 port = os.getenv("SYDNEY_MONGO_PORT", "27017")
 db_user = os.getenv("SYDNEY_MONGO_USER", None)
 db_pass = os.getenv("SYDNEY_MONGO_PASSWORD", None)
-auth_db = os.getenv("SYDNEY_MONGO_AUTH_DB", None)
+auth_db = os.getenv("SYDNEY_MONGO_AUTH_DB", "sydney")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -71,6 +71,7 @@ def send_message(environment, pipeline, step):
     if message is None or message == "":
         return "Invalid message: message cannot be none or empty"
 
+
     env = get_environment(environment)
     if not env: return "Invalid environment"
 
@@ -80,12 +81,15 @@ def send_message(environment, pipeline, step):
     step = get_step(pipeline, step)
     if not step: return "Invalid step"
 
+    log_level = request.args.get("log_level", "info")
+
     message_data = {
         "type": "message",
         "environment": env["name"],
         "pipeline": pipeline["name"],
         "step": step["name"],
         "message": message,
+        "level": log_level,
         "timestamp": str(datetime.datetime.utcnow())
     }
 

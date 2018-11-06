@@ -7,8 +7,11 @@ def set_state(environment, pipeline, step, state, exit_state=None):
     else:
         requests.get(f"http://localhost:5000/notify/{environment}/{pipeline}/{step}/{state}")
 
-def send_message(environment, pipeline, step, message):
-    requests.post(f"http://localhost:5000/message{environment}/{pipeline}/{step}", data={"message":message})
+def send_message(environment, pipeline, step, message, level=None):
+    if level:
+        requests.post(f"http://localhost:5000/message/{environment}/{pipeline}/{step}?log_level={level}", json={"message":message})
+    else:
+        requests.post(f"http://localhost:5000/message/{environment}/{pipeline}/{step}", json={"message":message})
 
 
 def reset():
@@ -34,12 +37,13 @@ reset()
 time.sleep(5)
 
 set_state("prod", "pipeline_1", "step_2", "running")
-send_message("prod", "pipeline_1", "step_2", "I am now running!")
+send_message("prod", "pipeline_1", "step_2", "Pulling latest data.", "debug")
 set_state("prod", "pipeline_1", "step_3a", "running")
 set_state("prod", "pipeline_1", "step_3b", "running")
 set_state("prod", "pipeline_1", "step_4", "running")
 
 time.sleep(0.5)
+send_message("dev", "pipeline_2", "step_2", "I am now running!")
 set_state("dev", "pipeline_2", "likes hamburgers", "running")
 set_state("dev", "pipeline_2", "likes hotdogs", "running")
 set_state("dev", "pipeline_2", "likes chicken patties", "running")
@@ -50,6 +54,7 @@ set_state("dev", "pipeline_2", "likes hotdogs", "no")
 set_state("dev", "pipeline_2", "likes chicken patties", "no")
 
 time.sleep(0.5)
+send_message("dev", "pipeline_1", "step_2", "Pipeline 2 finished!")
 set_state("dev", "pipeline_1", "step_2", "ok")
 
 
@@ -70,8 +75,14 @@ set_state("dev", "pipeline_2", "likes mustard", "yes")
 set_state("dev", "pipeline_2", "likes mayo", "yes")
 
 time.sleep(1)
+send_message("dev", "pipeline_1", "step_3a", "A message to post #1")
+time.sleep(0.25)
 set_state("dev", "pipeline_1", "step_3a", "ok")
 set_state("dev", "pipeline_1", "step_3b", "skipped")
+time.sleep(0.25)
+send_message("dev", "pipeline_1", "step_3a", "A message to post #2", "debug")
+time.sleep(0.25)
+send_message("dev", "pipeline_1", "step_3a", "A message to post #3", "warn")
 
 time.sleep(1)
 set_state("dev", "pipeline_2", "eating", "running")
@@ -79,6 +90,7 @@ time.sleep(3)
 set_state("dev", "pipeline_2", "eating", "failed", "__QUIT__")
 
 time.sleep(2)
+send_message("dev", "pipeline_1", "step_4", "Critical error!", "error")
 set_state("dev", "pipeline_1", "step_4", "failed", "__QUIT__")
 
 

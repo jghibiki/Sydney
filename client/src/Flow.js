@@ -13,7 +13,13 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import DeviceHub from '@material-ui/icons/DeviceHub';
+import Notifications from '@material-ui/icons/Notifications';
+import Warning from '@material-ui/icons/Warning';
+import Error from '@material-ui/icons/Error';
+import BugReport from '@material-ui/icons/BugReport';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
 
 
 import { SimpleNodeModel } from "./SimpleNodeModel.js";
@@ -179,7 +185,12 @@ class Flow extends Component {
 
 
                 <div style={{"display": "flex"}}>
-                    <div style={{ "background": "#4A4A4A", "overflowY": "scroll", "height": "85vh", "min-width": "300px"}}>
+                    <div style={{ 
+                        "background": "#4A4A4A", 
+                        "overflowY": "scroll", 
+                        "height": "85vh",
+                        "min-width": "300px"
+                    }}>
                         <div style={{ "background": "#fff"}}>
                             <FormControlLabel control={
                                     <Checkbox checked={this.state.should_filter} onChange={this.handleChangeFilter} value="should_filter" />
@@ -191,61 +202,78 @@ class Flow extends Component {
                             {this.filterHistory().map(el=>{
                                 return (
                                     <div key={el.timestamp + el.environment + el.pipeline + el.step + el.state}>
-                                        { el.type == "state_update" || el.type == undefined &&
+                                        { (el.type === "state_update" || el.type === undefined) &&
                                             <div style={{
-                                                "padding": "15px", 
+                                                "padding": "10px 5px 10px 5px", 
                                                 "borderLeft": "15px solid " + this.getStateColor(el.state), 
-                                                "borderRight": "15px solid " + this.getStateColor(el.state), 
+                                                "borderRight": "15px solid #757575", 
                                                 "borderTop": "1px solid black", 
                                                 "borderBottom": "1px solid black", 
                                                 "background": "#757575",
                                                 "wordWrap": "break-word", 
                                                 "maxWidth": "300px",
                                             }}>
-                                                <div style={{ "textAlign": "left"}}>
-                                                    { this.state.should_filter &&
-                                                        <b>
-                                                            {el.step} &rarr; {el.state}
-                                                        </b>
-                                                    }
-                                                    { !this.state.should_filter &&
-                                                        <b>
-                                                            {el.pipeline} : {el.step} &rarr; {el.state}
-                                                        </b>
-                                                    }
-                                                </div>
-                                                <br/>
-                                                {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                                <Grid container spacing={16}>
+                                                    <Grid item style={{"verticalAlign": "middle"}} >
+                                                        <DeviceHub style={{"height": "100%"}}/> 
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <div style={{ "textAlign": "left"}}>
+                                                            { this.state.should_filter &&
+                                                                <b>
+                                                                    {el.step} &rarr; {el.state}
+                                                                </b>
+                                                            }
+                                                            { !this.state.should_filter &&
+                                                                <b>
+                                                                    {el.pipeline} : {el.step} &rarr; {el.state}
+                                                                </b>
+                                                            }
+                                                        </div>
+                                                        <br/>
+                                                        {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                                    </Grid>
+                                                </Grid>
                                             </div>
                                         }
                                         { el.type == "message" &&
                                             <div style={{
-                                                "padding": "15px", 
+                                                "padding": "10px 5px 10px 5px", 
                                                 "borderLeft": "15px solid white", 
-                                                "borderRight": "15px solid white", 
+                                                "borderRight": "15px solid #757575", 
                                                 "borderTop": "1px solid black", 
                                                 "borderBottom": "1px solid black", 
                                                 "background": "#757575",
                                                 "wordWrap": "break-word", 
                                                 "maxWidth": "300px",
                                             }}>
-                                                <div style={{ "textAlign": "left"}}>
-                                                    { this.state.should_filter &&
-                                                        <b>
-                                                            {el.step}
-                                                        </b>
-                                                    }
-                                                    { !this.state.should_filter &&
-                                                        <b>
-                                                            {el.pipeline} : {el.step}
-                                                        </b>
-                                                    }
-                                                </div>
-                                                <br/>
-                                                <div dangerouslySetInnerHTML={{__html: el.message}}></div>
-                                                <br/>
-                                                <br/>
-                                                {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                                <Grid container spacing={16}>
+                                                    <Grid item style={{"verticalAlign": "middle"}} >
+                                                { (el.level == "info" || el.level == undefined ) && <Notifications style={{"height": "100%"}}/> }
+                                                { el.level == "warn" && <Warning style={{"height": "100%"}}/> }
+                                                { el.level == "error" && <Error style={{"height": "100%"}}/> }
+                                                { el.level == "debug" && <BugReport style={{"height": "100%"}}/> }
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <div style={{ "textAlign": "left"}}>
+                                                            { this.state.should_filter &&
+                                                                <b>
+                                                                    {el.step} : {el.level || "info"}
+                                                                </b>
+                                                            }
+                                                            { !this.state.should_filter &&
+                                                                <b>
+                                                                    {el.pipeline} : {el.step} : {el.level || "info"}
+                                                                </b>
+                                                            }
+                                                        </div>
+                                                        <br/>
+                                                        <div dangerouslySetInnerHTML={{__html: el.message}}></div>
+                                                        <br/>
+                                                        <br/>
+                                                        {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                                    </Grid>
+                                                </Grid>
                                             </div>
                                         }
                                     </div>
