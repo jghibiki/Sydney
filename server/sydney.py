@@ -220,7 +220,7 @@ def get_pipeline(env, pipeline_name):
 
 def get_environment(env_name):
     for environment in pipelines["environments"]:
-        if environment["name"] == env_name:
+        if environment["name"].lower() == env_name.lower():
             return environment
     return None
 
