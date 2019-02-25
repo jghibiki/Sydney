@@ -40,7 +40,7 @@ pipelines = load()
 def on_connect():
     socketio.emit('send_pipelines', json.dumps(pipelines))
 
-    history = list(mongo.db.history.find().sort("timestamp", -1).limit(200))
+    history = list(mongo.db.history.find().sort("timestamp", -1).limit(500))
 
     socketio.emit("send_history", json.dumps(history))
 
