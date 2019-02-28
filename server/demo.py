@@ -13,28 +13,21 @@ def send_message(environment, pipeline, step, message, level=None):
     else:
         requests.post(f"http://localhost:5000/message/{environment}/{pipeline}/{step}", json={"message":message})
 
+def reset_pipeline(env, pipeline, state):
+    url = f"http://localhost:5000/reset/{env}/{pipeline}/{state}"
+    response = requests.post(url)
+
 
 def reset():
     for env in ["dev", "prod"]:
-        set_state(env, "pipeline_1", "step_1", "pending")
-        set_state(env, "pipeline_1", "step_2", "pending")
-        set_state(env, "pipeline_1", "step_3a", "pending")
-        set_state(env, "pipeline_1", "step_3b", "pending")
-        set_state(env, "pipeline_1", "step_4", "pending")
-
-        set_state(env, "pipeline_2", "likes hamburgers", "pending")
-        set_state(env, "pipeline_2", "likes hotdogs", "pending")
-        set_state(env, "pipeline_2", "likes chicken patties", "pending")
-        set_state(env, "pipeline_2", "likes condiments", "pending")
-        set_state(env, "pipeline_2", "likes ketchup", "pending")
-        set_state(env, "pipeline_2", "likes mustard", "pending")
-        set_state(env, "pipeline_2", "likes mayo", "pending")
-        set_state(env, "pipeline_2", "eating", "pending")
+        reset_pipeline(env, "pipeline_1", "pending")
+        reset_pipeline(env, "pipeline_2", "pending")
 
 reset()
 
 
-time.sleep(5)
+time.sleep(10)
+
 
 set_state("prod", "pipeline_1", "step_2", "running")
 send_message("prod", "pipeline_1", "step_2", "Pulling latest data.", "debug")
