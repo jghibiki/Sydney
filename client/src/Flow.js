@@ -52,7 +52,6 @@ class Flow extends Component {
                 maxNumberPointsPerLink: 0,
             },
             history: [],
-            should_filter: true,
             parent_link: null
         }
 
@@ -65,14 +64,15 @@ class Flow extends Component {
         this.root_hash = null;
         this.notification_rules = null;
         this.dont_update = false;
+        this.socket = props.socket;
 
         this.initGraph();
-
 
         props.socket.on('send_pipelines', ((payload)=>{
             this.initGraph();
             this.updatePipeline(payload);
             this.renderPipeline();
+            props.socket.emit("get_history", {"environment": this.env["name"], "pipeline": this.pipeline["name"]})
         }).bind(this));
         props.socket.on('notify_state_change', this.processStateUpdate.bind(this));
 
@@ -91,6 +91,7 @@ class Flow extends Component {
                 history: JSON.parse(history)
             });
         }).bind(this));
+
 
         setInterval(this.monitorHash.bind(this), 500);
     }
@@ -131,7 +132,7 @@ class Flow extends Component {
 
         this.initGraph();
         this.renderPipeline();
-
+        this.socket.emit("get_history", {"environment": this.env["name"], "pipeline": this.pipeline["name"]})
     }
 
     dialogOpen = () => {
@@ -191,12 +192,8 @@ class Flow extends Component {
                         "height": "85vh",
                         "min-width": "300px"
                     }}>
-                        <div style={{ "background": "#fff"}}>
-                            <FormControlLabel control={
-                                    <Checkbox checked={this.state.should_filter} onChange={this.handleChangeFilter} value="should_filter" />
-                                }
-                                label="Filter History"
-                            />
+                        <div style={{ "color": "#fff"}}>
+                          <h3>History:</h3>
                         </div> 
                         <div >
                             {this.filterHistory().map(el=>{
@@ -219,16 +216,9 @@ class Flow extends Component {
                                                     </Grid>
                                                     <Grid item>
                                                         <div style={{ "textAlign": "left"}}>
-                                                            { this.state.should_filter &&
-                                                                <b>
-                                                                    {el.step} &rarr; {el.state}
-                                                                </b>
-                                                            }
-                                                            { !this.state.should_filter &&
-                                                                <b>
-                                                                    {el.pipeline} : {el.step} &rarr; {el.state}
-                                                                </b>
-                                                            }
+                                                          <b>
+                                                              {el.step} &rarr; {el.state}
+                                                          </b>
                                                         </div>
                                                         <br/>
                                                         {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
@@ -256,16 +246,9 @@ class Flow extends Component {
                                                     </Grid>
                                                     <Grid item>
                                                         <div style={{ "textAlign": "left"}}>
-                                                            { this.state.should_filter &&
-                                                                <b>
-                                                                    {el.step} : {el.level || "info"}
-                                                                </b>
-                                                            }
-                                                            { !this.state.should_filter &&
-                                                                <b>
-                                                                    {el.pipeline} : {el.step} : {el.level || "info"}
-                                                                </b>
-                                                            }
+                                                          <b>
+                                                              {el.step} : {el.level || "info"}
+                                                          </b>
                                                         </div>
                                                         <br/>
                                                         <div dangerouslySetInnerHTML={{__html: el.message}}></div>
@@ -567,8 +550,12 @@ class Flow extends Component {
         var goToOtherHash = "#" + this.hash !== window.location.hash;
 
         if( (!goToRootHash && goToOtherHash) || (!atRootHash && goToRootHash)){
+
             this.initGraph();
             this.renderPipeline();
+            if(this.env !== null && this.pipeline !== null){
+              this.socket.emit("get_history", {"environment": this.env["name"], "pipeline": this.pipeline["name"]})
+            }
         }
     }
 
@@ -582,24 +569,12 @@ class Flow extends Component {
     }
 
     filterHistory = () => {
-
-        if (!this.state.should_filter) {
-            
-            var history = this.state.history.filter(el =>{
-                return (
-                    el.environment === this.env.name 
-                );
-            });
-
-        }
-        else {
-            var history = this.state.history.filter(el =>{
-                return (
-                    el.environment === this.env.name &&
-                    el.pipeline === this.pipeline.name
-                );
-            });
-        }
+        var history = this.state.history.filter(el =>{
+            return (
+                el.environment === this.env.name &&
+                el.pipeline === this.pipeline.name
+            );
+        });
 
         return history;
     }
@@ -630,12 +605,6 @@ class Flow extends Component {
         this.bit = !this.bit
     }
 
-    handleChangeFilter = (event) => {
-        this.setState({ should_filter: event.target.checked })
-        this.dont_update = true;
-        //this.initGraph();
-        //this.renderPipeline();
-    }
 
 }
 

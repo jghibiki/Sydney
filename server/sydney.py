@@ -1,8 +1,11 @@
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, g
 from flask_socketio import SocketIO
 from flask_pymongo import PyMongo
+from rfc3339 import rfc3339
+import colors
+import time
 
 import bson.json_util  as json
 
@@ -35,15 +38,71 @@ EXIT_STATES = [
 
 pipelines = load()
 
+# adds better logging
 
+@app.before_request
+def start_timer():
+    g.start = time.time()
+
+
+@app.after_request
+def log_request(response):
+    if request.path == '/favicon.ico':
+        return response
+    elif request.path.startswith('/static'):
+        return response
+
+    now = time.time()
+    duration = round(now - g.start, 2)
+    dt = datetime.datetime.fromtimestamp(now)
+    timestamp = rfc3339(dt, utc=True)
+
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    host = request.host.split(':', 1)[0]
+    args = dict(request.args)
+
+    log_params = [
+        ('method', request.method, 'blue'),
+        ('path', request.path, 'blue'),
+        ('status', response.status_code, 'yellow'),
+        ('duration', duration, 'green'),
+        ('time', timestamp, 'magenta'),
+        ('ip', ip, 'red'),
+        ('host', host, 'red'),
+        ('params', args, 'blue')
+    ]
+
+    request_id = request.headers.get('X-Request-ID')
+    if request_id:
+        log_params.append(('request_id', request_id, 'yellow'))
+
+    parts = []
+    for name, value, color in log_params:
+        part = colors.color("{}={}".format(name, value), fg=color)
+        parts.append(part)
+    line = " ".join(parts)
+
+    app.logger.info(line)
+
+    return response
+
+
+# socket io handlers 
 @socketio.on('connect')
 def on_connect():
     socketio.emit('send_pipelines', json.dumps(pipelines))
 
-    history = list(mongo.db.history.find().sort("timestamp", -1).limit(500))
 
+@socketio.on('get_history')
+def get_history(payload):
+    pipeline_name = payload["pipeline"]
+    environment = payload["environment"]
+    q = {"pipeline": pipeline_name, "environment": environment}
+    print("a")
+    print(q)
+    history = list(mongo.db.history.find(q).sort("timestamp", -1).limit(500))
+    print(history)
     socketio.emit("send_history", json.dumps(history))
-
 
 ## ROUTES
 

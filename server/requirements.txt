@@ -5,3 +5,5 @@ gevent
 gevent-websocket
 gunicorn
 Flask-PyMongo
+ansicolors
+rfc3339
