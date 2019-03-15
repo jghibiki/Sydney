@@ -52,6 +52,7 @@ class Flow extends Component {
                 maxNumberPointsPerLink: 0,
             },
             history: [],
+            historyLoaded: false,
             parent_link: null
         }
 
@@ -77,19 +78,24 @@ class Flow extends Component {
         props.socket.on('notify_state_change', this.processStateUpdate.bind(this));
 
         props.socket.on('notify_message', ((message) =>{
-            var new_history = this.state.history.slice();
-            new_history.splice(0, 0, JSON.parse(message));
-            this.setState({
-                history: new_history
-            })
-            this.forceUpdate();
+
+          if (message.environment === this.env.name &&
+              message.pipeline === this.pipeline.name){
+              var new_history = this.state.history.slice();
+              new_history.splice(0, 0, JSON.parse(message));
+              this.setState({
+                  history: new_history
+              })
+              this.forceUpdate();
+          }
         }).bind(this));
             
 
         props.socket.on("send_history", ((history) =>{
-            this.setState({
-                history: JSON.parse(history)
-            });
+          this.setState({
+            history: JSON.parse(history),
+            historyLoaded: true,
+          });
         }).bind(this));
 
 
@@ -196,7 +202,17 @@ class Flow extends Component {
                           <h3>History:</h3>
                         </div> 
                         <div >
-                            {this.filterHistory().map(el=>{
+                            { this.state.historyLoaded == false && (<div style={{ "color": "#fff"}}>
+                                <hr/>
+                                <br/>
+                                <em>Loading...</em>
+                                <br/>
+                                <br/>
+                                <hr/>
+                                </div>)
+                            }
+                            
+                            {this.state.history.map(el=>{
                                 return (
                                     <div key={el.timestamp + el.environment + el.pipeline + el.step + el.state}>
                                         { (el.type === "state_update" || el.type === undefined) &&
@@ -388,11 +404,14 @@ class Flow extends Component {
         }
 
 
-        var new_history = this.state.history.slice();
-        new_history.splice(0, 0, data);
-        this.setState({
-            history: new_history
-        });
+        if (data.environment === this.env.name &&
+            data.pipeline === this.pipeline.name){
+          var new_history = this.state.history.slice();
+          new_history.splice(0, 0, data);
+          this.setState({
+              history: new_history
+          });
+        }
     }
 
     renderPipeline(){
@@ -483,7 +502,9 @@ class Flow extends Component {
 
         model.addAll(...new_steps.map(e=>e.node),...new_links)
 
-        this.engine.setDiagramModel(model);
+        let distributedModel = this.getDistributedModel(this.engine, model);
+        distributedModel.setLocked(true);
+        this.engine.setDiagramModel(distributedModel);
 
         if(this.pipeline.parent !== null){
             this.setState({ "parent_link": this.pipeline.parent })
@@ -567,45 +588,6 @@ class Flow extends Component {
         }
         return "#000";
     }
-
-    filterHistory = () => {
-        var history = this.state.history.filter(el =>{
-            return (
-                el.environment === this.env.name &&
-                el.pipeline === this.pipeline.name
-            );
-        });
-
-        return history;
-    }
-
-    componentDidUpdate = () => {
-        if (this.dont_update){
-            this.dont_update = false;
-            return
-        }
-        let distributedModel = this.getDistributedModel(this.engine, this.engine.getDiagramModel());
-        distributedModel.setLocked(true);
-        this.engine.setDiagramModel(distributedModel);
-
-        if (this.bit){
-            this.forceUpdate();
-            var e = document.getElementById("hidable")
-            if (e !== undefined) e.style.visibility="hidden"
-
-            setTimeout(() => {
-                this.zoomToFit()
-                var e = document.getElementById("hidable")
-                if (e !== undefined) e.style.visibility="visible"
-            }, 200);
-
-        }
-
-
-        this.bit = !this.bit
-    }
-
-
 }
 
 export default socketConnect(Flow);

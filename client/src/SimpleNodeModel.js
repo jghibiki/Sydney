@@ -12,8 +12,8 @@ export class SimpleNodeModel extends NodeModel {
         this.exit_state = exit_state;
         this.info = info;
         this.state = state;
-        this.height = 10;
-        this.width = 10;
+        this.height = 144;
+        this.width = 266;
 		this.addPort(new SimplePortModel("in"));
 		this.addPort(new SimplePortModel("out"));
 	}

@@ -206,8 +206,8 @@ class SimpleNodeWidget extends React.Component<SimpleNodeWidgetProps, SimpleNode
         // One possible fix...
         let height = ReactDOM.findDOMNode(this).offsetHeight;
         let width = ReactDOM.findDOMNode(this).offsetWidth;
-        this.props.node.height = height;
-        this.props.node.width = width;
+        this.props.node.height = 144 //height;
+        this.props.node.width = 266 //width;
     }
 }
 
