@@ -222,7 +222,7 @@ def notify_state_change(environment, pipeline, step, state):
 
     return "Updated {0} to state {1}".format(step["name"], state["name"])
 
-@app.route('/reset/<environment>/<pipeline>/<state>', methods=["POST"])
+@app.route('/reset/<environment>/<pipeline>/<state>', methods=["GET", "POST"])
 def reset_pipeline(environment, pipeline, state):
 
     env = get_environment(environment)
