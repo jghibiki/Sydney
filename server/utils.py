@@ -9,6 +9,8 @@ def load():
 
     pipeline_defs["states"] = schema["states"]
     pipeline_defs["failure_state"] = schema["failure_state"]
+    pipeline_defs["pending_state"] = schema["pending_state"]
+    pipeline_defs["success_state"] = schema["success_state"]
     pipeline_defs["root_hash"] = schema["root_hash"]
     pipeline_defs["notifications"] = schema["notifications"]
 
