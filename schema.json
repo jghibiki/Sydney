@@ -33,6 +33,8 @@
     ],
 
     "failure_state": "failed",
+    "success_state": "ok",
+    "pending_state": "pending",
 
     "notifications": [
         {
