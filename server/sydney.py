@@ -214,6 +214,9 @@ def notify_state_change(environment, pipeline, step, state):
                 elif pipelines["pending_state"] in child_states:
                     if pipelines["pending_state"] != parent["state"]:
                         notify_state_change(env["name"], parent_pipeline, parent["name"], pipelines["pending_state"])
+                elif pipelines["running_state"] in child_states:
+                    if pipelines["running_state"] != parent["state"]:
+                        notify_state_change(env["name"], parent_pipeline, parent["name"], pipelines["running_state"])
                 else:
                     #pick most common state
                     new_state = max(child_states, key=child_states.count)

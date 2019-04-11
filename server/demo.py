@@ -87,10 +87,14 @@ send_message("dev", "pipeline_1", "step_4", "Critical error!", "error")
 set_state("dev", "pipeline_1", "step_4", "failed", "__QUIT__")
 
 
-set_state("prod", "pipeline_1", "step_1", "ok")
 set_state("prod", "pipeline_1", "step_2", "ok")
 set_state("prod", "pipeline_1", "step_3a", "ok")
 set_state("prod", "pipeline_1", "step_3b", "ok")
 set_state("prod", "pipeline_1", "step_4", "ok")
+
+
+set_state("dev", "pipeline_2", "likes hotdogs", "failed")
+set_state("dev", "pipeline_2", "likes chicken patties", "yes")
+set_state("dev", "pipeline_2", "eating", "yes")
 
 send_message("DeV", "pipeline_1", "step_4", "Test envirnonment capitalization invariance", "debug")
