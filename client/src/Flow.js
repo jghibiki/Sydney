@@ -516,12 +516,14 @@ class Flow extends Component {
 
 
         // fixes odd height and width issue
-
-        setTimeout( (()=>{
+      var a = (()=>{
             var el = document.getElementsByClassName("srd-diagram")[0];
             el.style.height = "100%"
             el.style.width = "100%"
-        }).bind(this), 100);
+        }).bind(this)
+      a();
+
+        setTimeout(a, 0);
     }
 
     checkNotificationRules(new_state){
