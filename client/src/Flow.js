@@ -237,7 +237,7 @@ class Flow extends Component {
                                                           </b>
                                                         </div>
                                                         <br/>
-                                                        {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                                        {(new Date(el.timestamp)).toString().substring(0, 24)}
                                                     </Grid>
                                                 </Grid>
                                             </div>
@@ -270,7 +270,7 @@ class Flow extends Component {
                                                         <div dangerouslySetInnerHTML={{__html: el.message}}></div>
                                                         <br/>
                                                         <br/>
-                                                        {(new Date(el.timestamp + "UTC")).toString().substring(0, 24)}
+                                                        {(new Date(el.timestamp)).toString().substring(0, 24)}
                                                     </Grid>
                                                 </Grid>
                                             </div>
