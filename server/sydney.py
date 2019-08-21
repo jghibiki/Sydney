@@ -31,7 +31,7 @@ else:
     app.config["MONGO_URI"] = f"mongodb://{db_user}:{db_pass}@{host}:{port}/{auth_db}?authMechanism=SCRAM-SHA-1"
 
 mongo = PyMongo(app)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 EXIT_STATES = [
     "__QUIT__",
