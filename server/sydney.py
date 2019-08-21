@@ -3,6 +3,7 @@ import os
 from flask import Flask, render_template, request, g
 from flask_socketio import SocketIO
 from flask_pymongo import PyMongo
+from flask_cors import CORS
 from rfc3339 import rfc3339
 import colors
 import time
@@ -21,6 +22,7 @@ db_pass = os.getenv("SYDNEY_MONGO_PASSWORD", None)
 auth_db = os.getenv("SYDNEY_MONGO_AUTH_DB", "sydney")
 
 app = Flask(__name__)
+CORS(app)
 app.config['SECRET_KEY'] = 'secret!'
 
 if db_user is None or db_pass is None:
