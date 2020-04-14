@@ -3,7 +3,7 @@ from pathlib import Path
 from sydney.schema.config_schemas import config_schema, pipeline_schema
 
 
-class SydneyConfigLoader:
+class ConfigLoader:
     def __init__(self, config, pipelines):
         self.config_path = Path(config)
         self.pipelines_path = Path(pipelines)

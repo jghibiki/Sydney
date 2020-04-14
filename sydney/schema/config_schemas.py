@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, pprint
+from marshmallow import Schema, fields, validate, pprint
 
 
 class StateSchema(Schema):
@@ -55,6 +55,11 @@ class ProcessStepSchema(Schema):
     info = fields.Nested(MetadataSchema)
     application = fields.Nested(ApplicationSchema, required=False, missing=None)
     child_pipeline = fields.Str(missing=None, required=False)
+    instancing_type = fields.Str(
+        validate=validate.OneOf(["single", "multiple"]),
+        default="single",
+        missing="single",
+    )
 
 
 process_step_schema = ProcessStepSchema()
@@ -82,6 +87,8 @@ class PipelineSchema(Schema):
     edges = fields.Nested(EdgeSchema, many=True)
 
     associated_environments = fields.List(fields.Str(), missing=None, required=False)
+
+    # TODO: add pipeline reset schedule field
 
 
 pipeline_schema = PipelineSchema()

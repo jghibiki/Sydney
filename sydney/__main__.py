@@ -1,7 +1,7 @@
 import click
 from sydney.schema import SydneySchemaHelper
 from sydney.server import SydneyServer
-from sydney.schema.config_loader import SydneyConfigLoader
+from sydney.schema.config_loader import ConfigLoader
 from sydney.schema.mongo_helper import MongoHelper
 
 
@@ -25,7 +25,7 @@ def cli(ctx, mongo_host, mongo_port, mongo_user, mongo_password, mongo_auth_db):
 @click.option("--pipelines")
 @click.pass_context
 def schema(ctx, config, pipelines):
-    ctx.obj["schema"] = SydneyConfigLoader(config, pipelines)
+    ctx.obj["schema"] = ConfigLoader(config, pipelines)
 
 
 @schema.command()
@@ -65,8 +65,8 @@ def uninit(ctx):
 @click.pass_context
 def server(ctx):
 
-    app = SydneyServer()
-    app.load(ctx.obj)
+    app = SydneyServer(ctx.obj["mongo"])
+    app.load()
 
     app.start()
 

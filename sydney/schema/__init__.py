@@ -1,6 +1,7 @@
 import asyncio
 
 import motor.motor_asyncio
+from datetime import timedelta
 
 from sydney import constants
 from sydney.schema.mongo_collection_schemas import config_collection_schema
@@ -39,6 +40,7 @@ class SydneySchemaHelper(metaclass=Singleton):
 
         self._persist_config()
         self._persist_pipelines()
+        self._create_indexes()
 
     def update(self):
         if not self._schema_exists():
@@ -108,9 +110,11 @@ class SydneySchemaHelper(metaclass=Singleton):
                         "state": step_config[
                             "initial_state"
                         ],  # todo validate initial step is valid
+                        "initial_state": step_config["initial_state"],
                         "info": step_config.get("info"),
                         "application": step_config["application"],
                         "child_pipeline": step_config["child_pipeline"],
+                        "instancing_type": step_config["instancing_type"],
                     }
 
                     steps.append(step)
@@ -126,6 +130,20 @@ class SydneySchemaHelper(metaclass=Singleton):
                 self.mongo_helper.run_query(
                     self.sydney_pipeline_collection.insert_one(pipeline)
                 )
+
+    def _create_indexes(self):
+
+        self.mongo_helper.run_query(
+            self.mongo_helper.get_collection(constants.log_collection).create_index(
+                "timestamp", expireAfterSeconds=timedelta(days=7).seconds
+            )
+        )
+
+        self.mongo_helper.run_query(
+            self.mongo_helper.get_collection(constants.history_collection).create_index(
+                "timestamp", expireAfterSeconds=timedelta(days=7).seconds
+            )
+        )
 
     def _drop_old_collections(self):
         pass

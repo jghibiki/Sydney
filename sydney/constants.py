@@ -1,3 +1,5 @@
 mongo_db_name = "sydney"
 config_collection = "config"
 pipelines_collection = "pipelines"
+history_collection = "history"
+log_collection = "log"
