@@ -37,23 +37,12 @@
     "pending_state": "pending",
     "running_state": "running",
 
-    "notifications": [
-        {
-            "step": ".*",
-            "state": "failed"
-        }
-    ],
-
 
     "environments": [
         "dev",
         "prod"
     ],
 
-    "pipelines": [
-        "demo.json",
-        "demo_2.json"
-    ],
-
-    "root_hash": "pipeline_1"
+    "root_pipeline": "Overview",
+    "default_environment": "prod"
 }

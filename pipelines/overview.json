@@ -2,8 +2,6 @@
 
     "name": "Overview",
 
-    "notifications": [
-    ],
 
     "steps": [
         {
@@ -12,10 +10,13 @@
             "info": {
                 "description": "Automatically triggered email campaigns.",
                 "links": [
-                    [ "Source Code", "https://git.target.com/Morpheus/email-marketing" ]
-                ],
-                "child_pipeline": "#Email_Triggers"
-            }
+                    {
+                        "name":" Source Code",
+                        "url": "https://git.target.com/Morpheus/email-marketing"
+                    }
+                ]
+            },
+            "child_pipeline": "Email_Triggers"
         }
     ],
 

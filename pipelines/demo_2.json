@@ -2,50 +2,35 @@
 
     "name": "pipeline_2",
 
-    "notifications": [
-    ],
-
     "steps": [
         {
-            "type": "step",
             "name": "likes hamburgers",
             "initial_state": "pending"
         },
         {
-            "type": "step",
-            "name": "likes hotdogs",
-            "initial_state": "pending"
-        },
-        {
-            "type": "step",
             "name": "likes chicken patties",
             "initial_state": "pending"
         },
 
         {
-            "type": "step",
             "name": "likes condiments",
             "initial_state": "pending"
         },
 
         {
-            "type": "step",
             "name": "likes ketchup",
             "initial_state": "pending"
         },
         {
-            "type": "step",
             "name": "likes mustard",
             "initial_state": "pending"
         },
         {
-            "type": "step",
             "name": "likes mayo",
             "initial_state": "pending"
         },
 
         {
-            "type": "step",
             "name": "eating",
             "initial_state": "pending"
         }
