@@ -17,6 +17,30 @@ def register_routes():
         del config["_id"]
         return config
 
+    @route_adapter.get("/pipelines")
+    async def list_environments(app, request):
+        env_names = []
+
+        col = app["mongo_helper"].get_collection(constants.pipelines_collection)
+        async for pipeline in col.find():
+            env_names.append(pipeline["environment"])
+
+        return list(set(env_names))
+
+    @route_adapter.get("/pipelines/{env_name}")
+    async def list_pipelines(app, request):
+        if "env_name" not in request["url_params"]:
+            raise Exception("Failed to parse env_name url param")
+        env_name = request["url_params"]["env_name"]
+
+        pipeline_names = []
+
+        col = app["mongo_helper"].get_collection(constants.pipelines_collection)
+        async for pipeline in col.find({"environment": env_name}):
+            pipeline_names.append(pipeline["name"])
+
+        return pipeline_names
+
     @route_adapter.get("/pipeline/{env_name}/{pipeline_name}")
     async def get_pipeline(app, request):
 
